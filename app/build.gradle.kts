@@ -3,6 +3,7 @@
 import org.apache.commons.io.FileUtils
 import pers.zhc.gradle.plugins.ndk.rust.RustBuildPlugin
 import pers.zhc.gradle.plugins.ndk.rust.RustBuildPlugin.RustBuildPluginExtension
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -60,8 +61,15 @@ android {
     }
 }
 
-//val ndkTargets = "arm64-v8a-29,x86-29,armeabi-v7a-21,x86-29"
-val ndkTargets = "x86-29"
+val configFile = File(rootProject.projectDir, "config.properties")
+if (!configFile.exists()) {
+    throw GradleException("config.properties not exists")
+}
+val configs = Properties().apply {
+    load(configFile.reader())
+}
+
+val ndkTargets = (configs["ndk.targets"] ?: throw GradleException("ndk.targets missing")) as String
 val ndkTargetsConfig = ndkTargets.split(',').map {
     val groupValues = Regex("^(.*)-([0-9]+)\$").findAll(it).first().groupValues
     mapOf(
@@ -69,19 +77,20 @@ val ndkTargetsConfig = ndkTargets.split(',').map {
         Pair("api", groupValues[2].toInt())
     )
 }
+val abis = ndkTargetsConfig.map { it["abi"]!! as String }
 
 val jniOutputDir = file("jniLibs").also { it.mkdir() }
-val librimeLibDir = "/tmp/librime-lib"
-val librimeIncludeDir = "/home/bczhc/open-source/trime/app/src/main/jni/librime/src"
+val librimeLibDir = (configs["librime-lib-dir"] ?: throw GradleException("librime-lib-dir missing")) as String
+val librimeIncludeDir =
+    (configs["librime-include-dir"] ?: throw GradleException("librime-include-dir missing")) as String
 
-val rustBuildTargetEnv = mapOf(
-    Pair(
-        "x86", mapOf(
-            Pair("RIME_LIB_DIR", librimeLibDir),
-            Pair("RIME_INCLUDE_DIR", librimeIncludeDir)
-        )
+val rustBuildTargetEnv = HashMap<String, Map<String, String>>()
+abis.forEach { abi ->
+    rustBuildTargetEnv[abi] = mapOf(
+        Pair("RIME_LIB_DIR", File(librimeLibDir, abi).path),
+        Pair("RIME_INCLUDE_DIR", librimeIncludeDir)
     )
-)
+}
 
 configure<RustBuildPluginExtension> {
     srcDir.set("$projectDir/src/main/rust")
@@ -96,7 +105,9 @@ val compileRustTask = tasks.findByName(RustBuildPlugin.TASK_NAME())!!
 val copyLibrimeTask = task("copyLibrimeTask") {
     doLast {
         val name = "librime.so"
-        FileUtils.copyFile(File(librimeLibDir, name), File(jniOutputDir, name))
+        abis.forEach { abi->
+            FileUtils.copyFile(FileUtils.getFile(librimeLibDir, abi, name), FileUtils.getFile(jniOutputDir, abi, name))
+        }
     }
 }
 
