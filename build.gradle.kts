@@ -1,6 +1,7 @@
 buildscript {
     dependencies {
         classpath(files("/home/bczhc/code/android-native-build-plugin/build/libs/android-native-build-plugin-all.jar"))
+        classpath("com.github.bczhc:android-native-build-plugin:ee76be1d0e")
     }
 }
 
