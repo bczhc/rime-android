@@ -1,9 +1,15 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.apache.commons.io.FileUtils
+import pers.zhc.gradle.plugins.ndk.rust.RustBuildPlugin
+import pers.zhc.gradle.plugins.ndk.rust.RustBuildPlugin.RustBuildPluginExtension
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+apply<RustBuildPlugin>()
 
 android {
     namespace = "pers.zhc.android.rime"
@@ -45,7 +51,61 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    sourceSets {
+        val sets = asMap
+        sets["main"]!!.apply {
+            jniLibs.srcDirs("jniLibs")
+        }
+    }
 }
+
+//val ndkTargets = "arm64-v8a-29,x86-29,armeabi-v7a-21,x86-29"
+val ndkTargets = "x86-29"
+val ndkTargetsConfig = ndkTargets.split(',').map {
+    val groupValues = Regex("^(.*)-([0-9]+)\$").findAll(it).first().groupValues
+    mapOf(
+        Pair("abi", groupValues[1]),
+        Pair("api", groupValues[2].toInt())
+    )
+}
+
+val jniOutputDir = file("jniLibs").also { it.mkdir() }
+val librimeLibDir = "/tmp/librime-lib"
+val librimeIncludeDir = "/home/bczhc/open-source/trime/app/src/main/jni/librime/src"
+
+val rustBuildTargetEnv = mapOf(
+    Pair(
+        "x86", mapOf(
+            Pair("RIME_LIB_DIR", librimeLibDir),
+            Pair("RIME_INCLUDE_DIR", librimeIncludeDir)
+        )
+    )
+)
+
+configure<RustBuildPluginExtension> {
+    srcDir.set("$projectDir/src/main/rust")
+    ndkDir.set(android.ndkDirectory.path)
+    targets.set(ndkTargetsConfig)
+    buildType.set("release")
+    outputDir.set(jniOutputDir.path)
+    targetEnv.set(rustBuildTargetEnv)
+}
+
+val compileRustTask = tasks.findByName(RustBuildPlugin.TASK_NAME())!!
+val copyLibrimeTask = task("copyLibrimeTask") {
+    doLast {
+        val name = "librime.so"
+        FileUtils.copyFile(File(librimeLibDir, name), File(jniOutputDir, name))
+    }
+}
+
+val compileJniTask = task("compileJni") {
+    dependsOn(compileRustTask)
+    dependsOn(copyLibrimeTask)
+}
+
+project.tasks.getByName("preBuild").dependsOn(compileJniTask)
 
 dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
