@@ -5,7 +5,11 @@ class Rime {
         init {
             System.loadLibrary("rime")
             System.loadLibrary("rime_jni")
+            initModules()
         }
+
+        @JvmStatic
+        private external fun initModules()
 
         @JvmStatic
         external fun getRimeVersion(): String

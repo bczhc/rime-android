@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 [dependencies]
 jni = "0.21.1"
 librime-sys = "0.4.0"
-rime-api = "0.3.0"
+rime-api = "0.4.1"
 
 [profile.release]
 panic = "abort"

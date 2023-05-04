@@ -105,7 +105,7 @@ val compileRustTask = tasks.findByName(RustBuildPlugin.TASK_NAME())!!
 val copyLibrimeTask = task("copyLibrimeTask") {
     doLast {
         val name = "librime.so"
-        abis.forEach { abi->
+        abis.forEach { abi ->
             FileUtils.copyFile(FileUtils.getFile(librimeLibDir, abi, name), FileUtils.getFile(jniOutputDir, abi, name))
         }
     }
@@ -125,4 +125,5 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation("com.google.code.gson:gson:2.10.1")
 }
