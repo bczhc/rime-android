@@ -1,5 +1,7 @@
 package pers.zhc.android.rime.jni
 
+import pers.zhc.android.rime.annotation.CheckReturnValue
+
 class Rime {
     companion object {
         init {
@@ -13,5 +15,36 @@ class Rime {
 
         @JvmStatic
         external fun getRimeVersion(): String
+
+        @JvmStatic
+        external fun createEngine(
+            userDataDir: String,
+            sharedDataDir: String?,
+        ): Long
+
+        /**
+         * this function will block
+         *
+         * @return true on success, false otherwise
+         */
+        @JvmStatic
+        @CheckReturnValue
+        external fun waitForDeployment(engineAddr: Long): Boolean
+
+        @JvmStatic
+        external fun createSession(engineAddr: Long): Long
+
+        /**
+         * @return true: accepted; false: pass
+         */
+        @JvmStatic
+        @CheckReturnValue
+        external fun processKey(sessionAddr: Long, keyCode: Int, modifier: Int): Boolean
+
+        @JvmStatic
+        external fun closeSession(sessionAddr: Long)
+
+        @JvmStatic
+        external fun closeEngine(engineAddr: Long)
     }
 }
