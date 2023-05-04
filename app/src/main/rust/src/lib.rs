@@ -1,3 +1,6 @@
+#![feature(try_blocks)]
+
+mod helper;
 mod jni;
 
 #[link(name = "rime")]
