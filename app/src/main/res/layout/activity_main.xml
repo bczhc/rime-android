@@ -25,7 +25,7 @@
         <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="User data dir"
+                android:hint="Shared data dir"
                 android:id="@+id/shared_data_dir_et"
                 android:text="/storage/emulated/0/rime-data"
         />
