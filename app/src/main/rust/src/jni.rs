@@ -1,4 +1,3 @@
-use crate::helper::CheckOrThrow;
 use std::ffi::CStr;
 use std::time::Duration;
 
@@ -9,6 +8,7 @@ use librime_sys::{rime_get_api, RimeKeyCode, RimeModifier};
 use rime_api::engine::{DeployResult, Engine};
 use rime_api::{Context, KeyEvent, KeyStatus, Session, Traits};
 
+use crate::helper::{null_jobject, CheckOrThrow};
 use crate::{
     declare_librime_module_dependencies, APP_NAME, DISTRUBUTION_CODE_NAME, DISTRUBUTION_NAME,
     DISTRUBUTION_VERSION,
@@ -45,18 +45,24 @@ pub extern "system" fn Java_pers_zhc_android_rime_jni_Rime_createEngine(
     userDataDir: JString,
     sharedDataDir: JString,
 ) -> jlong {
-    // TODO: non-UTF8 path
-    let mut traits = Traits::new();
-    traits.set_user_data_dir(env.get_string(&userDataDir).unwrap().to_str().unwrap());
-    if !sharedDataDir.is_null() {
-        traits.set_shared_data_dir(env.get_string(&sharedDataDir).unwrap().to_str().unwrap());
-    }
-    traits.set_distribution_name(DISTRUBUTION_NAME);
-    traits.set_distribution_code_name(DISTRUBUTION_CODE_NAME);
-    traits.set_distribution_version(DISTRUBUTION_VERSION);
-    traits.set_app_name(APP_NAME);
+    let result: anyhow::Result<jlong> = try {
+        // TODO: non-UTF8 path
+        let mut traits = Traits::new();
+        traits.set_user_data_dir(env.get_string(&userDataDir)?.to_str()?);
+        if !sharedDataDir.is_null() {
+            traits.set_shared_data_dir(env.get_string(&sharedDataDir)?.to_str()?);
+        }
+        traits.set_distribution_name(DISTRUBUTION_NAME);
+        traits.set_distribution_code_name(DISTRUBUTION_CODE_NAME);
+        traits.set_distribution_version(DISTRUBUTION_VERSION);
+        traits.set_app_name(APP_NAME);
 
-    Box::into_raw(Box::new(Engine::new(traits))) as jlong
+        Box::into_raw(Box::new(Engine::new(traits))) as jlong
+    };
+    if result.is_err() {
+        return 0;
+    }
+    result.unwrap()
 }
 
 #[no_mangle]
@@ -151,7 +157,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getContext(
 #[no_mangle]
 #[allow(non_snake_case)]
 pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getPreedit(
-    env: JNIEnv,
+    mut env: JNIEnv,
     _class: JClass,
     context: jlong,
 ) -> jstring {
@@ -159,8 +165,12 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getPreedit(
     let Some(preedit) = context.composition.preedit else {
         return JObject::null().into_raw()
     };
-    // TODO: error handling
-    env.new_string(preedit).unwrap().into_raw()
+    let preedit = env.new_string(preedit);
+    preedit.check_or_throw(&mut env).unwrap();
+    if preedit.is_err() {
+        return null_jobject();
+    }
+    preedit.unwrap().into_raw()
 }
 
 #[no_mangle]

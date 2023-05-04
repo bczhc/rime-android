@@ -1,5 +1,7 @@
 use std::fmt::Debug;
 
+use jni::objects::JObject;
+use jni::sys::jobject;
 use jni::JNIEnv;
 
 pub trait CheckOrThrow {
@@ -16,4 +18,8 @@ where
         }
         Ok(())
     }
+}
+
+pub fn null_jobject() -> jobject {
+    JObject::null().into_raw()
 }
