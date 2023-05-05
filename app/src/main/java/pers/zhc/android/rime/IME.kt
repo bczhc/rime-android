@@ -16,6 +16,7 @@ import pers.zhc.android.rime.MyApplication.Companion.GSON
 import pers.zhc.android.rime.databinding.ImeCandidateItemBinding
 import pers.zhc.android.rime.databinding.ImeCandidatesViewBinding
 import pers.zhc.android.rime.rime.*
+import pers.zhc.android.rime.util.ToastUtils
 import pers.zhc.android.rime.util.fromJsonOrNull
 import pers.zhc.tools.utils.setLinearLayoutManager
 import kotlin.concurrent.thread
@@ -34,7 +35,7 @@ class IME : InputMethodService() {
         val themedContext = ContextThemeWrapper(this, R.style.Theme_Main)
         candidatesViewBinding = ImeCandidatesViewBinding.inflate(LayoutInflater.from(themedContext))
         candidatesAdapter = CandidatesListAdapter()
-        setupSession()
+        setupSession(this)
     }
 
     private fun onKey(event: KeyEvent): Boolean {
@@ -99,7 +100,7 @@ class IME : InputMethodService() {
     companion object {
         private var SESSION: Session? = null
 
-        private fun setupSession() {
+        private fun setupSession(context: android.content.Context) {
             if (SESSION != null) {
                 return
             }
@@ -113,7 +114,15 @@ class IME : InputMethodService() {
                     SESSION = engine.createSession()
                 }
                 engine.setNotificationHandler { messageType, messageValue ->
-                    println(Pair(messageType, messageValue))
+                    println("Message: " + Pair(messageType, messageValue))
+                    if (messageType == "option") {
+                        if (messageValue.startsWith('!')) {
+                            val option = messageValue.substring(1)
+                            ToastUtils.show(context, "$option: off")
+                        } else {
+                            ToastUtils.show(context, "$messageValue: on")
+                        }
+                    }
                 }
             }
         }
