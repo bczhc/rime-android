@@ -76,6 +76,10 @@ fun toRimeKey(event: KeyEvent): RimeKey? {
         KEYCODE_SHIFT_RIGHT -> XK_Shift_R
         KEYCODE_META_LEFT -> XK_Super_L
         KEYCODE_META_RIGHT -> XK_Super_R
+        KEYCODE_DPAD_LEFT -> XK_Left
+        KEYCODE_DPAD_RIGHT -> XK_Right
+        KEYCODE_DPAD_UP -> XK_Up
+        KEYCODE_DPAD_DOWN -> XK_Down
         else -> {
             val mapped = rimeKeyCodeMap[c] ?: return null
             if (!event.isShiftPressed) {
