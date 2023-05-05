@@ -74,4 +74,11 @@ object JNI {
 
     @JvmStatic
     external fun getCommit(sessionAddr: Long): String?
+
+    interface NotificationHandlerCallback {
+        fun onMessage(messageType: String, messageValue: String)
+    }
+
+    @JvmStatic
+    external fun setNotificationHandler(engineAddr: Long, callback: NotificationHandlerCallback?)
 }

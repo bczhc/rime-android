@@ -263,3 +263,46 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_releaseContext
     let context = context as *mut Context;
     drop(Box::from_raw(context));
 }
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_setNotificationHandler(
+    mut env: JNIEnv,
+    _class: JClass,
+    engine: jlong,
+    callback: JObject,
+) {
+    let engine = &mut *(engine as *mut Engine);
+
+    if callback.is_null() {
+        engine.set_notification_callback(|_, _| {});
+        return;
+    }
+
+    let result: anyhow::Result<()> = try {
+        // TODO: memory leak
+        let global_callback = env.new_global_ref(callback)?;
+        let java_vm = env.get_java_vm()?;
+
+        engine.set_notification_callback(move |t, v| {
+            let result: anyhow::Result<()> = try {
+                let mut guard = java_vm.attach_current_thread()?;
+                let env = &mut *guard;
+                let r#type = env.new_string(t)?;
+                let value = env.new_string(v)?;
+                env.call_method(
+                    &*global_callback,
+                    "onMessage",
+                    "(Ljava/lang/String;Ljava/lang/String;)V",
+                    &[
+                        JValue::Object(&r#type.into()),
+                        JValue::Object(&value.into()),
+                    ],
+                )?;
+            };
+            // tested. shouldn't panic
+            result.unwrap();
+        });
+    };
+    result.check_or_throw(&mut env).unwrap();
+}

@@ -25,6 +25,17 @@ class Engine(private val addr: Long) {
         closed = true
     }
 
+    fun setNotificationHandler(callback: ((messageType: String, messageValue: String) -> Unit)?) {
+        if (callback == null) {
+            JNI.setNotificationHandler(addr, null)
+        }
+        JNI.setNotificationHandler(addr, object : JNI.NotificationHandlerCallback {
+            override fun onMessage(messageType: String, messageValue: String) {
+                callback!!(messageType, messageValue)
+            }
+        })
+    }
+
     companion object {
         fun create(userDataDir: String, sharedDataDir: String?): Engine {
             val addr = JNI.createEngine(userDataDir, sharedDataDir)

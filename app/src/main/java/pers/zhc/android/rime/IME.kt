@@ -112,6 +112,9 @@ class IME : InputMethodService() {
                 if (result == Engine.Companion.DeployStatus.SUCCESS) {
                     SESSION = engine.createSession()
                 }
+                engine.setNotificationHandler { messageType, messageValue ->
+                    println(Pair(messageType, messageValue))
+                }
             }
         }
     }
