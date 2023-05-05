@@ -1,8 +1,8 @@
-package pers.zhc.android.rime.jni
+package pers.zhc.android.rime.rime
 
 class Session(private val addr: Long) {
     fun getContext(): Context? {
-        return Context(Rime.getContext(addr).also {
+        return Context(JNI.getContext(addr).also {
             if (it == 0L) {
                 return null
             }
@@ -10,11 +10,11 @@ class Session(private val addr: Long) {
     }
 
     fun getCommit(): String? {
-        return Rime.getCommit(addr)
+        return JNI.getCommit(addr)
     }
 
     fun processKey(event: KeyEvent): KeyStatus {
-        return when (Rime.processKey(addr, event.keyCode, event.modifier)) {
+        return when (JNI.processKey(addr, event.keyCode, event.modifier)) {
             true -> KeyStatus.ACCEPTED
             false -> KeyStatus.PASS
         }

@@ -2,12 +2,12 @@ package pers.zhc.android.rime
 
 import android.Manifest
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import pers.zhc.android.rime.databinding.ActivityMainBinding
-import pers.zhc.android.rime.jni.Engine
-import pers.zhc.android.rime.jni.KeyEvent
+import pers.zhc.android.rime.rime.Engine
+import pers.zhc.android.rime.rime.JNI
+import pers.zhc.android.rime.rime.KeyEvent
 import pers.zhc.android.rime.util.ToastUtils
 import kotlin.concurrent.thread
 
@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(bindings.root)
 
         requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+        ToastUtils.show(this, JNI.getRimeVersion())
 
         bindings.testButton.setOnClickListener {
             val userDataDir = bindings.userDataDirEt.text.toString()

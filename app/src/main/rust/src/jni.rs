@@ -16,7 +16,7 @@ use crate::{
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "system" fn Java_pers_zhc_android_rime_jni_Rime_initModules(_env: JNIEnv, _: JClass) {
+pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_initModules(_env: JNIEnv, _: JClass) {
     unsafe {
         declare_librime_module_dependencies();
     }
@@ -24,7 +24,7 @@ pub extern "system" fn Java_pers_zhc_android_rime_jni_Rime_initModules(_env: JNI
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getRimeVersion(
+pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getRimeVersion(
     env: JNIEnv,
     _class: JClass,
 ) -> jstring {
@@ -39,7 +39,7 @@ pub extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getRimeVersion(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "system" fn Java_pers_zhc_android_rime_jni_Rime_createEngine(
+pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_createEngine(
     mut env: JNIEnv,
     _class: JClass,
     userDataDir: JString,
@@ -67,7 +67,7 @@ pub extern "system" fn Java_pers_zhc_android_rime_jni_Rime_createEngine(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_waitForDeployment(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_waitForDeployment(
     _env: JNIEnv,
     _class: JClass,
     engine: jlong,
@@ -83,7 +83,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_waitForDeploym
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_createSession(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_createSession(
     mut env: JNIEnv,
     _class: JClass,
     engine: jlong,
@@ -97,7 +97,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_createSession(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_processKey(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_processKey(
     _env: JNIEnv,
     _class: JClass,
     session: jlong,
@@ -118,7 +118,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_processKey(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_closeSession(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_closeSession(
     mut env: JNIEnv,
     _class: JClass,
     session: jlong,
@@ -132,7 +132,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_closeSession(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_closeEngine(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_closeEngine(
     _env: JNIEnv,
     _class: JClass,
     engine: jlong,
@@ -142,7 +142,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_closeEngine(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getContext(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getContext(
     _env: JNIEnv,
     _class: JClass,
     session: jlong,
@@ -156,7 +156,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getContext(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getPreedit(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getPreedit(
     mut env: JNIEnv,
     _class: JClass,
     context: jlong,
@@ -175,7 +175,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getPreedit(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getCandidates(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getCandidates(
     mut env: JNIEnv,
     _class: JClass,
     context: jlong,
@@ -219,7 +219,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getCandidates(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getSelectedCandidatesPos(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getSelectedCandidatesPos(
     _env: JNIEnv,
     _class: JClass,
     context: jlong,
@@ -230,7 +230,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getSelectedCan
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_jni_Rime_getCommit(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getCommit(
     env: JNIEnv,
     _class: JClass,
     session: jlong,

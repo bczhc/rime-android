@@ -1,19 +1,19 @@
-package pers.zhc.android.rime.jni
+package pers.zhc.android.rime.rime
 
 class Context(private val addr: Long) {
     fun getPreedit(): String? {
-        return Rime.getPreedit(addr)
+        return JNI.getPreedit(addr)
     }
 
     @Suppress("ArrayInDataClass")
     data class Candidates(
-        val candidates: Array<Rime.Companion.Candidate>,
+        val candidates: Array<JNI.Candidate>,
         val selectedPos: Int,
     )
 
     fun getCandidates(): Candidates {
-        val candidates = Rime.getCandidates(addr, Rime.PHANTOM_CANDIDATE)
-        val selectedPos = Rime.getSelectedCandidatesPos(addr)
+        val candidates = JNI.getCandidates(addr, JNI.PHANTOM_CANDIDATE)
+        val selectedPos = JNI.getSelectedCandidatesPos(addr)
         return Candidates(candidates, selectedPos)
     }
 }

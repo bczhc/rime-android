@@ -1,4 +1,4 @@
-package pers.zhc.android.rime.jni
+package pers.zhc.android.rime.rime
 
 data class KeyEvent(
     val keyCode: Int,
