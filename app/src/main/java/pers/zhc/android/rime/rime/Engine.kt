@@ -17,6 +17,10 @@ class Engine(private val addr: Long) {
         }
     }
 
+    protected fun finalize() {
+        JNI.releaseEngine(addr)
+    }
+
     companion object {
         fun create(userDataDir: String, sharedDataDir: String?): Engine {
             val addr = JNI.createEngine(userDataDir, sharedDataDir)

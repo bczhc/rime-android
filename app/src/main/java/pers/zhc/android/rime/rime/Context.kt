@@ -16,4 +16,8 @@ class Context(private val addr: Long) {
         val selectedPos = JNI.getSelectedCandidatesPos(addr)
         return Candidates(candidates, selectedPos)
     }
+
+    protected fun finalize() {
+        JNI.releaseContext(addr)
+    }
 }

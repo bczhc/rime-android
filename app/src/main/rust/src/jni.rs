@@ -132,7 +132,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_closeSession(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_closeEngine(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_releaseEngine(
     _env: JNIEnv,
     _class: JClass,
     engine: jlong,
@@ -240,4 +240,15 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getCommit(
         None => return JObject::null().into_raw(),
         Some(c) => env.new_string(c.text).unwrap().into_raw(),
     }
+}
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_releaseContext(
+    _env: JNIEnv,
+    _class: JClass,
+    context: jlong,
+) {
+    let context = context as *mut Context;
+    drop(Box::from_raw(context));
 }

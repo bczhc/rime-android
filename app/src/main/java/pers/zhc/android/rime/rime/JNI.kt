@@ -44,7 +44,10 @@ object JNI {
     external fun closeSession(sessionAddr: Long)
 
     @JvmStatic
-    external fun closeEngine(engineAddr: Long)
+    external fun releaseEngine(engineAddr: Long)
+
+    @JvmStatic
+    external fun releaseContext(contextAddr: Long)
 
     /**
      * @return 0 for None

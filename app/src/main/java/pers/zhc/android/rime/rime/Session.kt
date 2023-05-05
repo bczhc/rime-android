@@ -19,4 +19,8 @@ class Session(private val addr: Long) {
             false -> KeyStatus.PASS
         }
     }
+
+    protected fun finalize() {
+        JNI.closeSession(addr)
+    }
 }
