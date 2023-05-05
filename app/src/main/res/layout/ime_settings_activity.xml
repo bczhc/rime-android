@@ -5,7 +5,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity"
-        tools:ignore="HardcodedText"
         android:orientation="vertical"
 >
     <com.google.android.material.textfield.TextInputLayout
@@ -14,9 +13,9 @@
         <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="User data dir"
+                android:hint="@string/rime_user_data_dir"
                 android:id="@+id/user_data_dir_et"
-                android:text="/storage/emulated/0/rime"
+                tools:text="/storage/emulated/0/rime"
         />
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
@@ -25,9 +24,9 @@
         <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Shared data dir"
+                android:hint="@string/rime_shared_data_dir"
                 android:id="@+id/shared_data_dir_et"
-                android:text="/storage/emulated/0/rime-data"
+                tools:text="/storage/emulated/0/rime-data"
         />
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.button.MaterialButton

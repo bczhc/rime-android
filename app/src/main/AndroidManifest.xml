@@ -15,6 +15,7 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.Main"
             android:requestLegacyExternalStorage="true"
+            android:name=".MyApplication"
             tools:targetApi="31">
         <service
                 android:name=".IME"

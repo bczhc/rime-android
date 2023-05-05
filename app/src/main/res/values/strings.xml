@@ -6,4 +6,6 @@
     <string name="deploy_success_dialog">部署成功</string>
     <string name="deploy_failure_dialog">有错误发生</string>
     <string name="done_button">完成</string>
+    <string name="rime_user_data_dir">用户数据目录</string>
+    <string name="rime_shared_data_dir">共享数据目录</string>
 </resources>
