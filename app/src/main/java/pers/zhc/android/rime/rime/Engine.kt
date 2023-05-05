@@ -4,9 +4,11 @@ import pers.zhc.android.rime.annotation.CheckReturnValue
 
 // TODO: release resource
 class Engine(private val addr: Long) {
+    var closed = false
+
     fun createSession(): Session {
         val sessionAddr = JNI.createSession(addr)
-        return Session(sessionAddr)
+        return Session(sessionAddr, this)
     }
 
     @CheckReturnValue
@@ -19,6 +21,8 @@ class Engine(private val addr: Long) {
 
     protected fun finalize() {
         JNI.releaseEngine(addr)
+        println("Finalize Engine")
+        closed = true
     }
 
     companion object {

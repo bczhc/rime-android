@@ -25,10 +25,7 @@ class ImeSettingsActivity : AppCompatActivity() {
 
         userDataDirEt = bindings.userDataDirEt
         sharedDataDirEt = bindings.sharedDataDirEt
-        if (!CONFIGS_FILE.exists()) {
-            CONFIGS_FILE.createNewFile()
-        }
-        GSON.fromJsonOrNull(CONFIGS_FILE.readText(), Configs::class.java)?.let { configs ->
+        GSON.fromJsonOrNull(CONFIGS_FILE.readText(), RimeConfigs::class.java)?.let { configs ->
             userDataDirEt.setText(configs.userDataDir)
             sharedDataDirEt.setText(configs.sharedDataDir)
         }
@@ -64,18 +61,19 @@ class ImeSettingsActivity : AppCompatActivity() {
     }
 
     private fun handleBackPressed() {
-        val configs = Configs(userDataDirEt.text.toString(), sharedDataDirEt.text.toString())
+        val configs = RimeConfigs(userDataDirEt.text.toString(), sharedDataDirEt.text.toString())
         val json = GSON.toJson(configs)
         CONFIGS_FILE.writeText(json)
         finish()
     }
 
-    data class Configs(
-        val userDataDir: String,
-        val sharedDataDir: String,
-    )
-
     companion object {
-        val CONFIGS_FILE = File(MyApplication.CONTEXT.filesDir, "configs.json")
+        val CONFIGS_FILE by lazy {
+            File(MyApplication.CONTEXT.filesDir, "configs.json").also {
+                if (!it.exists()) {
+                    it.createNewFile()
+                }
+            }
+        }
     }
 }

@@ -163,7 +163,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getPreedit(
 ) -> jstring {
     let context = &*(context as *const Context);
     let Some(preedit) = context.composition.preedit else {
-        return JObject::null().into_raw()
+        return null_jobject()
     };
     let preedit = env.new_string(preedit);
     preedit.check_or_throw(&mut env).unwrap();
@@ -212,7 +212,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getCandidates(
     };
     result.check_or_throw(&mut env).unwrap();
     if result.is_err() {
-        return JObject::null().into_raw();
+        return null_jobject();
     }
     result.unwrap()
 }
@@ -231,15 +231,20 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getSelectedCan
 #[no_mangle]
 #[allow(non_snake_case)]
 pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getCommit(
-    env: JNIEnv,
+    mut env: JNIEnv,
     _class: JClass,
     session: jlong,
 ) -> jstring {
     let session = &*(session as *const Session);
-    match session.commit() {
-        None => return JObject::null().into_raw(),
-        Some(c) => env.new_string(c.text).unwrap().into_raw(),
+    let result: anyhow::Result<jstring> = match session.commit() {
+        None => return null_jobject(),
+        Some(c) => try { env.new_string(c.text)?.into_raw() },
+    };
+    result.check_or_throw(&mut env).unwrap();
+    if result.is_err() {
+        return null_jobject();
     }
+    result.unwrap()
 }
 
 #[no_mangle]
