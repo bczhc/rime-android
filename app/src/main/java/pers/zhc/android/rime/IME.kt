@@ -1,6 +1,7 @@
 package pers.zhc.android.rime
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -130,6 +131,7 @@ class CandidatesListAdapter : RecyclerView.Adapter<CandidatesListAdapter.MyViewH
     class MyViewHolder(bindings: ImeCandidateItemBinding) : RecyclerView.ViewHolder(bindings.root) {
         val candidateTV = bindings.candidateView
         val selectLabelTV = bindings.selectLabelTv
+        val rootRL = bindings.root
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -142,11 +144,18 @@ class CandidatesListAdapter : RecyclerView.Adapter<CandidatesListAdapter.MyViewH
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val (selectLabel, candidateText, comment) = candidates!!.candidates[position]
+        // when candidates is null, `getItemCount()` gets 0; we assert it's not null here
+        val candidates = candidates!!
+        val (selectLabel, candidateText, comment) = candidates.candidates[position]
         holder.selectLabelTV.text = selectLabel ?: (position + 1).toString()
         var text = candidateText
         comment?.let { text += " $it" }
         holder.candidateTV.text = text
+        if (position == candidates.selectedPos) {
+            holder.rootRL.setBackgroundColor(Color.LTGRAY)
+        } else {
+            holder.rootRL.setBackgroundColor(Color.WHITE)
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
