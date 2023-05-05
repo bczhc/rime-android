@@ -13,7 +13,7 @@
             android:icon="@drawable/ic_launcher_background"
             android:label="@string/app_name"
             android:supportsRtl="true"
-            android:theme="@style/Theme.RimeAndroid"
+            android:theme="@style/Theme.Main"
             android:requestLegacyExternalStorage="true"
             tools:targetApi="31">
         <service
@@ -32,7 +32,7 @@
         <activity
                 android:name=".MainActivity"
                 android:exported="true"
-                android:theme="@style/Theme.RimeAndroid">
+                android:theme="@style/Theme.Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -46,7 +46,7 @@
         <activity
                 android:name=".ImeSettingsActivity"
                 android:exported="true"
-                android:theme="@style/Theme.RimeAndroid">
+                android:theme="@style/Theme.Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
