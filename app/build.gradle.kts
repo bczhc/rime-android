@@ -100,7 +100,7 @@ configure<RustBuildPluginExtension> {
     srcDir.set("$projectDir/src/main/rust")
     ndkDir.set(android.ndkDirectory.path)
     targets.set(ndkTargetsConfig)
-    buildType.set(buildType)
+    buildType.set(ndkBuildType)
     outputDir.set(jniOutputDir.path)
     targetEnv.set(rustBuildTargetEnv)
 }
