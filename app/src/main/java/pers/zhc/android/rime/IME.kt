@@ -119,7 +119,8 @@ fun ImeCandidatesViewBinding.setCandidates(candidates: Context.Candidates) {
     for ((i, candidate) in candidates.candidates.withIndex()) {
         val selectLabel = candidate.selectLabel ?: (i + 1).toString()
         val candidateView = ImeCandidateViewBinding.inflate(LayoutInflater.from(themedContext)).apply {
-            var text = "$selectLabel ${candidate.text}"
+            selectLabelTv.text = selectLabel
+            var text = candidate.text
             candidate.comment?.let { text += " $it" }
             candidateView.text = text
         }.root
