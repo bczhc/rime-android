@@ -168,13 +168,6 @@ dependencies = [
 [[package]]
 name = "librime-sys"
 version = "0.4.0"
-dependencies = [
- "bindgen",
-]
-
-[[package]]
-name = "librime-sys"
-version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2c0d2e5f3117b57dc2bd835c2a97d90914b35b63790f2827d36408758e1be25"
 dependencies = [
@@ -259,11 +252,13 @@ checksum = "a5996294f19bd3aae0453a862ad728f60e6600695733dd5df01da90c54363a3c"
 
 [[package]]
 name = "rime-api"
-version = "0.4.2"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0cb856edf40a1cf4ffaae9fa574e99f79281d37068db5f3d2bce2467040773af"
 dependencies = [
  "cstr",
  "home",
- "librime-sys 0.4.0",
+ "librime-sys",
  "once_cell",
  "thiserror",
 ]
@@ -274,7 +269,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "jni",
- "librime-sys 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "librime-sys",
  "rime-api",
 ]
 

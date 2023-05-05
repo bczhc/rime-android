@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import androidx.appcompat.view.ContextThemeWrapper
 import pers.zhc.android.rime.ImeSettingsActivity.Companion.CONFIGS_FILE
 import pers.zhc.android.rime.MyApplication.Companion.GSON
 import pers.zhc.android.rime.databinding.ImeCandidateViewBinding
@@ -25,7 +26,8 @@ class IME : InputMethodService() {
 
     override fun onCreate() {
         super.onCreate()
-        candidatesViewBinding = ImeCandidatesViewBinding.inflate(layoutInflater)
+        val themedContext = ContextThemeWrapper(this, R.style.Theme_Main)
+        candidatesViewBinding = ImeCandidatesViewBinding.inflate(LayoutInflater.from(themedContext))
         setupSession()
     }
 
@@ -98,10 +100,12 @@ fun ImeCandidatesViewBinding.setPreedit(text: String) {
 
 @SuppressLint("SetTextI18n")
 fun ImeCandidatesViewBinding.setCandidates(candidates: Context.Candidates) {
+    val themedContext = ContextThemeWrapper(this.root.context, R.style.Theme_Main)
+
     val candidatesLL = this.candidatesLl
     candidatesLL.removeAllViews()
     for (candidate in candidates.candidates) {
-        val candidateView = ImeCandidateViewBinding.inflate(LayoutInflater.from(this.root.context)).apply {
+        val candidateView = ImeCandidateViewBinding.inflate(LayoutInflater.from(themedContext)).apply {
             var text = candidate.text
             candidate.comment?.let { text += " $it" }
             candidateView.text = text
