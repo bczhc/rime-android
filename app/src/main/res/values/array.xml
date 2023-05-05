@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="ime_main">
+        <item>启用输入法</item>
+        <item>选择输入法</item>
+        <item>Rime设置</item>
+    </array>
+</resources>

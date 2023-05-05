@@ -1,53 +1,45 @@
 package pers.zhc.android.rime
 
-import android.Manifest
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import pers.zhc.android.rime.databinding.ActivityMainBinding
-import pers.zhc.android.rime.rime.Engine
-import pers.zhc.android.rime.rime.JNI
-import pers.zhc.android.rime.rime.KeyEvent
-import pers.zhc.android.rime.util.ToastUtils
-import kotlin.concurrent.thread
+import pers.zhc.tools.utils.RecyclerViewUtils
+import pers.zhc.tools.utils.addDividerLines
+import pers.zhc.tools.utils.setLinearLayoutManager
 
 class MainActivity : AppCompatActivity() {
-    @Suppress("PrivatePropertyName")
-    private val TAG: String = this.javaClass.name
-
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val bindings = ActivityMainBinding.inflate(layoutInflater)
         setContentView(bindings.root)
 
-        requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val recyclerView = bindings.recyclerView
 
-        ToastUtils.show(this, JNI.getRimeVersion())
+        val menuTextList = resources.getStringArray(R.array.ime_main).toList()
+        val adapter = RecyclerViewUtils.buildSimpleItem1ListAdapter(this, menuTextList)
+        recyclerView.adapter = adapter
 
-        bindings.testButton.setOnClickListener {
-            val userDataDir = bindings.userDataDirEt.text.toString()
-            val sharedDataDir = bindings.sharedDataDirEt.text.toString().ifEmpty { null }
-            val engine = Engine.create(userDataDir, sharedDataDir)
-            ToastUtils.show(this, "Deploying...")
-            thread {
-                val result = engine.waitForDeployment()
-                if (!result) {
-                    ToastUtils.show(this, "Deployment failed")
-                } else {
-                    ToastUtils.show(this, "Done")
+        recyclerView.setLinearLayoutManager()
+        recyclerView.addDividerLines()
+
+        adapter.setOnItemClickListener { position, _ ->
+            when (position) {
+                0 -> {
+                    // enable IME
+                    startActivity(Intent("android.settings.INPUT_METHOD_SETTINGS"))
                 }
 
-                val session = engine.createSession()
-                val keyStatus = session.processKey(KeyEvent(103 /* g */, 0))
-                println(keyStatus)
+                1 -> {
+                    // select IME
+                    (applicationContext.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).showInputMethodPicker()
+                }
 
-                val context = session.getContext()!!
-                println(context)
-                println(context.getCandidates())
-                println(session.getCommit())
+                2 -> {
+                    // rime settings
+                    startActivity(Intent(this, ImeSettingsActivity::class.java))
+                }
             }
         }
     }
