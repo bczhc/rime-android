@@ -9,6 +9,6 @@ extern "C" {
 }
 
 const APP_NAME: &str = "Rime-Android";
-const DISTRUBUTION_NAME: &str = "Rime-Android";
-const DISTRUBUTION_CODE_NAME: &str = "Rime-Android";
-const DISTRUBUTION_VERSION: &str = "0.0.0";
+const DISTRIBUTION_NAME: &str = "Rime-Android";
+const DISTRIBUTION_CODE_NAME: &str = "Rime-Android";
+const DISTRIBUTION_VERSION: &str = "0.0.0";

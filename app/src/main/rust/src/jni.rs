@@ -10,8 +10,8 @@ use rime_api::{Context, KeyEvent, KeyStatus, Session, Traits};
 
 use crate::helper::{null_jobject, CheckOrThrow};
 use crate::{
-    declare_librime_module_dependencies, APP_NAME, DISTRUBUTION_CODE_NAME, DISTRUBUTION_NAME,
-    DISTRUBUTION_VERSION,
+    declare_librime_module_dependencies, APP_NAME, DISTRIBUTION_CODE_NAME, DISTRIBUTION_NAME,
+    DISTRIBUTION_VERSION,
 };
 
 #[no_mangle]
@@ -52,9 +52,9 @@ pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_createEngine(
         if !sharedDataDir.is_null() {
             traits.set_shared_data_dir(env.get_string(&sharedDataDir)?.to_str()?);
         }
-        traits.set_distribution_name(DISTRUBUTION_NAME);
-        traits.set_distribution_code_name(DISTRUBUTION_CODE_NAME);
-        traits.set_distribution_version(DISTRUBUTION_VERSION);
+        traits.set_distribution_name(DISTRIBUTION_NAME);
+        traits.set_distribution_code_name(DISTRIBUTION_CODE_NAME);
+        traits.set_distribution_version(DISTRIBUTION_VERSION);
         traits.set_app_name(APP_NAME);
 
         Box::into_raw(Box::new(Engine::new(traits))) as jlong
