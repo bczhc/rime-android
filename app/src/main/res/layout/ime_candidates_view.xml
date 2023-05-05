@@ -12,8 +12,10 @@
               tools:text="nrom"
               android:id="@+id/preedit_view"
     />
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                  android:id="@+id/candidates_ll"
-                  android:orientation="vertical"
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recycler_view"
+            tools:listitem="@layout/ime_candidate_item"
     />
 </LinearLayout>

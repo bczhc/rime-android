@@ -5,20 +5,24 @@ import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.recyclerview.widget.RecyclerView
 import pers.zhc.android.rime.ImeSettingsActivity.Companion.CONFIGS_FILE
 import pers.zhc.android.rime.MyApplication.Companion.GSON
-import pers.zhc.android.rime.databinding.ImeCandidateViewBinding
+import pers.zhc.android.rime.databinding.ImeCandidateItemBinding
 import pers.zhc.android.rime.databinding.ImeCandidatesViewBinding
 import pers.zhc.android.rime.rime.*
 import pers.zhc.android.rime.util.fromJsonOrNull
+import pers.zhc.tools.utils.setLinearLayoutManager
 import kotlin.concurrent.thread
 
 class IME : InputMethodService() {
     private var candidatesViewBinding: ImeCandidatesViewBinding? = null
     private var ic: InputConnection? = null
+    private var candidatesAdapter: CandidatesListAdapter? = null
 
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         ic = currentInputConnection
@@ -28,6 +32,7 @@ class IME : InputMethodService() {
         super.onCreate()
         val themedContext = ContextThemeWrapper(this, R.style.Theme_Main)
         candidatesViewBinding = ImeCandidatesViewBinding.inflate(LayoutInflater.from(themedContext))
+        candidatesAdapter = CandidatesListAdapter()
         setupSession()
     }
 
@@ -50,7 +55,8 @@ class IME : InputMethodService() {
         val context = session.getContext()
         if (context != null) {
             candidatesViewBinding.setPreedit(context.getPreedit() ?: "")
-            candidatesViewBinding.setCandidates(context.getCandidates())
+            val candidates = context.getCandidates()
+            candidatesAdapter!!.update(candidates)
         }
         val commit = session.getCommit()
         if (commit != null) {
@@ -75,6 +81,10 @@ class IME : InputMethodService() {
 
     override fun onCreateCandidatesView(): View {
         setCandidatesViewShown(true)
+        candidatesViewBinding!!.recyclerView.apply {
+            adapter = candidatesAdapter!!
+            setLinearLayoutManager()
+        }
         return candidatesViewBinding!!.root
     }
 
@@ -110,24 +120,38 @@ fun ImeCandidatesViewBinding.setPreedit(text: String) {
     this.preeditView.text = text
 }
 
-@SuppressLint("SetTextI18n")
-fun ImeCandidatesViewBinding.setCandidates(candidates: Context.Candidates) {
-    val themedContext = ContextThemeWrapper(this.root.context, R.style.Theme_Main)
-
-    val candidatesLL = this.candidatesLl
-    candidatesLL.removeAllViews()
-    for ((i, candidate) in candidates.candidates.withIndex()) {
-        val selectLabel = candidate.selectLabel ?: (i + 1).toString()
-        val candidateView = ImeCandidateViewBinding.inflate(LayoutInflater.from(themedContext)).apply {
-            selectLabelTv.text = selectLabel
-            var text = candidate.text
-            candidate.comment?.let { text += " $it" }
-            candidateView.text = text
-        }.root
-        candidatesLL.addView(candidateView)
-    }
-}
-
 fun InputConnection.commit(text: String) {
     this.commitText(text, 1 /* a value > 0 */)
+}
+
+class CandidatesListAdapter : RecyclerView.Adapter<CandidatesListAdapter.MyViewHolder>() {
+    private var candidates: Context.Candidates? = null
+
+    class MyViewHolder(bindings: ImeCandidateItemBinding) : RecyclerView.ViewHolder(bindings.root) {
+        val candidateTV = bindings.candidateView
+        val selectLabelTV = bindings.selectLabelTv
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val bindings = ImeCandidateItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyViewHolder(bindings)
+    }
+
+    override fun getItemCount(): Int {
+        return (candidates ?: return 0).candidates.size
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val (selectLabel, candidateText, comment) = candidates!!.candidates[position]
+        holder.selectLabelTV.text = selectLabel ?: (position + 1).toString()
+        var text = candidateText
+        comment?.let { text += " $it" }
+        holder.candidateTV.text = text
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun update(candidates: Context.Candidates) {
+        this.candidates = candidates
+        notifyDataSetChanged()
+    }
 }
