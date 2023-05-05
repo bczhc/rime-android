@@ -83,6 +83,10 @@ val jniOutputDir = file("jniLibs").also { it.mkdir() }
 val librimeLibDir = (configs["librime-lib-dir"] ?: throw GradleException("librime-lib-dir missing")) as String
 val librimeIncludeDir =
     (configs["librime-include-dir"] ?: throw GradleException("librime-include-dir missing")) as String
+val ndkBuildType = configs["ndk.buildType"] as String? ?: "debug"
+if (ndkBuildType != "debug" && ndkBuildType != "release") {
+    throw GradleException("Invalid ndk build type: $ndkBuildType")
+}
 
 val rustBuildTargetEnv = HashMap<String, Map<String, String>>()
 abis.forEach { abi ->
@@ -96,7 +100,7 @@ configure<RustBuildPluginExtension> {
     srcDir.set("$projectDir/src/main/rust")
     ndkDir.set(android.ndkDirectory.path)
     targets.set(ndkTargetsConfig)
-    buildType.set("debug")
+    buildType.set(buildType)
     outputDir.set(jniOutputDir.path)
     targetEnv.set(rustBuildTargetEnv)
 }
