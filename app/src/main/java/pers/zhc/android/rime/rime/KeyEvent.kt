@@ -63,7 +63,8 @@ fun toRimeKey(event: KeyEvent): RimeKey {
     val code = when (val c = event.keyCode) {
         KEYCODE_SPACE -> XK_space
         KEYCODE_ENTER -> XK_Return
-        KEYCODE_BACK -> XK_BackSpace
+        KEYCODE_DEL -> XK_BackSpace
+        KEYCODE_FORWARD_DEL -> XK_Delete
         KEYCODE_TAB -> XK_Tab
         KEYCODE_CAPS_LOCK -> XK_Caps_Lock
         KEYCODE_ESCAPE -> XK_Escape
@@ -77,7 +78,7 @@ fun toRimeKey(event: KeyEvent): RimeKey {
         KEYCODE_META_RIGHT -> XK_Super_R
         else -> {
             val mapped = rimeKeyCodeMap[c]!!
-            if (event.isShiftPressed) {
+            if (!event.isShiftPressed) {
                 mapped.first
             } else {
                 mapped.second
