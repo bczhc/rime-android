@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Test"
-            android:id="@+id/test_button"
+            android:text="@string/deploy_button"
+            android:id="@+id/deploy_button"
     />
 </LinearLayout>
