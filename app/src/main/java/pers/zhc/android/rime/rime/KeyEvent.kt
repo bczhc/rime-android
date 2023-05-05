@@ -50,7 +50,7 @@ val rimeKeyCodeMap by lazy {
     }
 }
 
-fun toRimeKey(event: KeyEvent): RimeKey {
+fun toRimeKey(event: KeyEvent): RimeKey? {
     val release = event.action == ACTION_UP
     var modifier = kEmpty
 
@@ -77,7 +77,7 @@ fun toRimeKey(event: KeyEvent): RimeKey {
         KEYCODE_META_LEFT -> XK_Super_L
         KEYCODE_META_RIGHT -> XK_Super_R
         else -> {
-            val mapped = rimeKeyCodeMap[c]!!
+            val mapped = rimeKeyCodeMap[c] ?: return null
             if (!event.isShiftPressed) {
                 mapped.first
             } else {

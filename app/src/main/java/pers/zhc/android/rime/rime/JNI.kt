@@ -65,11 +65,12 @@ object JNI {
     external fun getSelectedCandidatesPos(contextAddr: Long): Int
 
     data class Candidate(
+        val selectLabel: String?,
         val text: String,
         val comment: String?,
     )
 
-    val PHANTOM_CANDIDATE = Candidate("", null)
+    val PHANTOM_CANDIDATE = Candidate(null, "", null)
 
     @JvmStatic
     external fun getCommit(sessionAddr: Long): String?

@@ -32,11 +32,16 @@ class IME : InputMethodService() {
     }
 
     private fun onKey(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_BACK && isInputViewShown) {
+            hideWindow()
+            return true
+        }
+
         val session = SESSION ?: return false
         val ic = ic ?: return false
         val candidatesViewBinding = candidatesViewBinding ?: return false
 
-        val rimeKeyEvent = toRimeKey(event)
+        val rimeKeyEvent = toRimeKey(event) ?: return false
         val keyStatus = session.processKey(rimeKeyEvent)
         if (keyStatus == KeyStatus.PASS) {
             return false
@@ -73,6 +78,13 @@ class IME : InputMethodService() {
         return candidatesViewBinding!!.root
     }
 
+    override fun onComputeInsets(outInsets: Insets) {
+        super.onComputeInsets(outInsets)
+        if (!isFullscreenMode) {
+            outInsets.contentTopInsets = outInsets.visibleTopInsets
+        }
+    }
+
     companion object {
         private var SESSION: Session? = null
 
@@ -104,9 +116,10 @@ fun ImeCandidatesViewBinding.setCandidates(candidates: Context.Candidates) {
 
     val candidatesLL = this.candidatesLl
     candidatesLL.removeAllViews()
-    for (candidate in candidates.candidates) {
+    for ((i, candidate) in candidates.candidates.withIndex()) {
+        val selectLabel = candidate.selectLabel ?: (i + 1).toString()
         val candidateView = ImeCandidateViewBinding.inflate(LayoutInflater.from(themedContext)).apply {
-            var text = candidate.text
+            var text = "$selectLabel ${candidate.text}"
             candidate.comment?.let { text += " $it" }
             candidateView.text = text
         }.root

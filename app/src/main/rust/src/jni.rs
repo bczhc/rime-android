@@ -191,17 +191,23 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getCandidates(
             &candidate_class,
             &JObject::null(),
         )?;
+        let select_labels = &context.select_labels;
 
         for (i, c) in candidates.iter().enumerate() {
             let comment_jstring: JString = match c.comment {
                 None => JObject::null().into(),
                 Some(c) => env.new_string(c)?,
             };
+            let select_labels_jstring = match select_labels {
+                None => JObject::null().into(),
+                Some(s) => env.new_string(s[i])?,
+            };
 
             let candidate_obj = env.new_object(
                 &candidate_class,
-                "(Ljava/lang/String;Ljava/lang/String;)V",
+                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
                 &[
+                    JValue::Object(&select_labels_jstring),
                     JValue::Object(&env.new_string(c.text)?.into()),
                     JValueGen::Object(&comment_jstring.into()),
                 ],
