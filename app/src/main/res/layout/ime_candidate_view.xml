@@ -12,6 +12,8 @@
               android:gravity="center_vertical"
               android:paddingHorizontal="5dp"
               android:fontFamily="monospace"
+              android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+              android:textSize="18sp"
     />
     <TextView
             android:layout_width="match_parent"
