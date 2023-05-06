@@ -137,7 +137,9 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_releaseEngine(
     _class: JClass,
     engine: jlong,
 ) {
-    drop(Box::from_raw(engine as *mut Engine));
+    let mut engine = Box::from_raw(engine as *mut Engine);
+    engine.set_notification_callback(|_, _| {});
+    drop(engine);
 }
 
 #[no_mangle]
@@ -280,7 +282,6 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_setNotificatio
     }
 
     let result: anyhow::Result<()> = try {
-        // TODO: memory leak
         let global_callback = env.new_global_ref(callback)?;
         let java_vm = env.get_java_vm()?;
 
@@ -300,8 +301,8 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_setNotificatio
                     ],
                 )?;
             };
-            // tested. shouldn't panic
-            result.unwrap();
+            // tested. no error should occur
+            assert!(result.is_ok());
         });
     };
     result.check_or_throw(&mut env).unwrap();
