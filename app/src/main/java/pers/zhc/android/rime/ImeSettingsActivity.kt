@@ -31,6 +31,7 @@ class ImeSettingsActivity : AppCompatActivity() {
         }
 
         bindings.deployButton.setOnClickListener {
+            IME.resetSession()
             val userDataDir = userDataDirEt.text.toString()
             val sharedDataDir = sharedDataDirEt.text.toString().ifEmpty { null }
             val dialog = Dialog(this).apply {

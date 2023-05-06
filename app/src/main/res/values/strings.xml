@@ -8,4 +8,6 @@
     <string name="done_button">完成</string>
     <string name="rime_user_data_dir">用户数据目录</string>
     <string name="rime_shared_data_dir">共享数据目录</string>
+    <string name="deploy_failure_toast">部署有错误发生</string>
+    <string name="session_preparing_preedit_hint">准备中</string>
 </resources>
