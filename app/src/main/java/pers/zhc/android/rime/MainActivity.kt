@@ -54,6 +54,11 @@ class MainActivity : AppCompatActivity() {
                     // rime settings
                     startActivity(Intent(this, ImeSettingsActivity::class.java))
                 }
+
+                3 -> {
+                    // input test
+                    startActivity(Intent(this, InputTestActivity::class.java))
+                }
             }
         }
     }

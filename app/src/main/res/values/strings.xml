@@ -10,4 +10,6 @@
     <string name="rime_shared_data_dir">共享数据目录</string>
     <string name="deploy_failure_toast">部署有错误发生</string>
     <string name="session_preparing_preedit_hint">准备中</string>
+    <string name="settings_label">设置</string>
+    <string name="input_test_label">测试</string>
 </resources>

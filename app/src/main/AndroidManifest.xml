@@ -11,7 +11,6 @@
             android:dataExtractionRules="@xml/data_extraction_rules"
             android:fullBackupContent="@xml/backup_rules"
             android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name"
             android:supportsRtl="true"
             android:theme="@style/Theme.Main"
             android:requestLegacyExternalStorage="true"
@@ -33,7 +32,8 @@
         <activity
                 android:name=".MainActivity"
                 android:exported="true"
-                android:theme="@style/Theme.Main">
+                android:theme="@style/Theme.Main"
+                android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -47,7 +47,19 @@
         <activity
                 android:name=".ImeSettingsActivity"
                 android:exported="true"
-                android:theme="@style/Theme.Main">
+                android:theme="@style/Theme.Main"
+                android:label="@string/settings_label"
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".InputTestActivity"
+                android:exported="true"
+                android:theme="@style/Theme.Main"
+                android:label="@string/input_test_label"
+        >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
