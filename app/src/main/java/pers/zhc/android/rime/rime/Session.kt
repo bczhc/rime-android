@@ -31,8 +31,8 @@ class Session(private val addr: Long, private val engine: Engine) {
     }
 
     protected fun finalize() {
-        checkEngineClosed()
         println("Finalize Session")
+        checkEngineClosed()
         JNI.closeSession(addr)
         closed = true
     }

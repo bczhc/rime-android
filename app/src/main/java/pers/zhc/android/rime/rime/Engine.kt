@@ -20,8 +20,8 @@ class Engine(private val addr: Long) {
     }
 
     protected fun finalize() {
-        JNI.releaseEngine(addr)
         println("Finalize Engine")
+        JNI.releaseEngine(addr)
         closed = true
     }
 

@@ -26,8 +26,8 @@ class Context(private val addr: Long, private val session: Session) {
     }
 
     protected fun finalize() {
-        checkSessionClosed()
         println("Finalize Context")
+        checkSessionClosed()
         JNI.releaseContext(addr)
     }
 }

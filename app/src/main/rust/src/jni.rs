@@ -164,7 +164,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getPreedit(
     context: jlong,
 ) -> jstring {
     let context = &*(context as *const Context);
-    let Some(preedit) = context.composition.preedit else {
+    let Some(preedit) = context.composition().preedit else {
         return null_jobject()
     };
     let preedit = env.new_string(preedit);
@@ -186,14 +186,14 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getCandidates(
     let result: anyhow::Result<jobjectArray> = try {
         let context = &*(context as *const Context);
         let candidate_class = env.get_object_class(dummy_candidate_obj)?;
-        let candidates = &context.menu.candidates;
+        let candidates = &context.menu().candidates;
 
         let candidates_array = env.new_object_array(
             candidates.len() as jsize,
             &candidate_class,
             &JObject::null(),
         )?;
-        let select_labels = &context.select_labels;
+        let select_labels = &context.select_labels();
 
         for (i, c) in candidates.iter().enumerate() {
             let comment_jstring: JString = match c.comment {
@@ -233,7 +233,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getSelectedCan
     context: jlong,
 ) -> jint {
     let context = &*(context as *const Context);
-    context.menu.highlighted_candidate_index as jint
+    context.menu().highlighted_candidate_index as jint
 }
 
 #[no_mangle]
@@ -246,7 +246,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getCommit(
     let session = &*(session as *const Session);
     let result: anyhow::Result<jstring> = match session.commit() {
         None => return null_jobject(),
-        Some(c) => try { env.new_string(c.text)?.into_raw() },
+        Some(c) => try { env.new_string(c.text())?.into_raw() },
     };
     result.check_or_throw(&mut env).unwrap();
     if result.is_err() {
