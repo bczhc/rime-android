@@ -60,6 +60,7 @@ pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_createEngine(
         Box::into_raw(Box::new(Engine::new(traits))) as jlong
     };
     if result.is_err() {
+        result.check_or_throw(&mut env).unwrap();
         return 0;
     }
     result.unwrap()

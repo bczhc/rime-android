@@ -1,7 +1,13 @@
 package pers.zhc.android.rime.rime
 
 class Session(private val addr: Long, private val engine: Engine) {
-    var closed = false
+    init {
+        // prevent engine being finalized first than this
+        // (JVM finalizers are unordered)
+        // https://www.hboehm.info/misc_slides/java_finalizers.pdf
+        engineRefMap[addr] = engine
+    }
+
     private fun checkEngineClosed() {
         if (engine.closed) {
             throw RuntimeException("Engine has been closed")
@@ -14,7 +20,7 @@ class Session(private val addr: Long, private val engine: Engine) {
             if (it == 0L) {
                 return null
             }
-        }, this)
+        })
     }
 
     fun getCommit(): String? {
@@ -34,6 +40,11 @@ class Session(private val addr: Long, private val engine: Engine) {
         println("Finalize Session")
         checkEngineClosed()
         JNI.closeSession(addr)
-        closed = true
+        // remove engine; now Engine can be finalized
+        engineRefMap.remove(addr)
+    }
+
+    companion object {
+        val engineRefMap = HashMap<Long, Engine>()
     }
 }

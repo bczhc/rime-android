@@ -1,14 +1,7 @@
 package pers.zhc.android.rime.rime
 
-class Context(private val addr: Long, private val session: Session) {
-    private fun checkSessionClosed() {
-        if (session.closed) {
-            throw RuntimeException("Session has been closed")
-        }
-    }
-
+class Context(private val addr: Long) {
     fun getPreedit(): String? {
-        checkSessionClosed()
         return JNI.getPreedit(addr)
     }
 
@@ -19,7 +12,6 @@ class Context(private val addr: Long, private val session: Session) {
     )
 
     fun getCandidates(): Candidates {
-        checkSessionClosed()
         val candidates = JNI.getCandidates(addr, JNI.PHANTOM_CANDIDATE)
         val selectedPos = JNI.getSelectedCandidatesPos(addr)
         return Candidates(candidates, selectedPos)
@@ -27,7 +19,6 @@ class Context(private val addr: Long, private val session: Session) {
 
     protected fun finalize() {
         println("Finalize Context")
-        checkSessionClosed()
         JNI.releaseContext(addr)
     }
 }

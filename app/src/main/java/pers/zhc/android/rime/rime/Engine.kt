@@ -2,7 +2,15 @@ package pers.zhc.android.rime.rime
 
 import pers.zhc.android.rime.annotation.CheckReturnValue
 
-// TODO: release resource
+/**
+ * Rime engine
+ *
+ * Reference hierarchy:
+ * Engine
+ *   - Session ------> Context
+ *
+ * Context has no specific reference relationship with Session
+ */
 class Engine(private val addr: Long) {
     var closed = false
 
