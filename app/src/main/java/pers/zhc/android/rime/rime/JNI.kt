@@ -6,14 +6,14 @@ object JNI {
     init {
         System.loadLibrary("rime")
         System.loadLibrary("rime_jni")
-        initModules()
+        jniInit()
     }
 
     @JvmStatic
-    private external fun initModules()
+    private external fun jniInit()
 
     @JvmStatic
-    external fun initialize2(userDataDir: String, sharedDataDir: String)
+    external fun initialize(userDataDir: String, sharedDataDir: String)
 
     @JvmStatic
     external fun finalize()

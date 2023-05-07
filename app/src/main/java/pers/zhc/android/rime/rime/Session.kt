@@ -22,8 +22,8 @@ class Session(private val addr: Long) {
         }
     }
 
-    protected fun finalize() {
-        println("Finalize Session")
+    fun close() {
+        println("Close session $addr")
         JNI.closeSession(addr)
     }
 

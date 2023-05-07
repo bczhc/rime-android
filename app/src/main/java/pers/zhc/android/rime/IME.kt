@@ -103,11 +103,15 @@ class IME : InputMethodService() {
         if (SESSION != null) {
             return
         }
+        // when full-check deployment is in progress, prevent IME from creating sessions
+        if (ImeSettingsActivity.FULL_DEPLOYING) {
+            return
+        }
         if (!Rime.initialized) {
             val configs = GSON.fromJsonOrNull(CONFIGS_FILE.readText(), RimeConfigs::class.java)
             val userDataDir = configs?.userDataDir ?: ""
             val sharedDataDir = configs?.sharedDataDir ?: ""
-            JNI.initialize2(userDataDir, sharedDataDir)
+            Rime.reinitialize(userDataDir, sharedDataDir)
             setUpOnOptionChangedHandler()
         }
         try {
@@ -123,6 +127,13 @@ class IME : InputMethodService() {
 
     companion object {
         private var SESSION: Session? = null
+
+        fun resetSession() {
+            SESSION?.let {
+                it.close()
+                SESSION = null
+            }
+        }
 
         private fun setUpOnOptionChangedHandler() {
             val appContext = MyApplication.CONTEXT

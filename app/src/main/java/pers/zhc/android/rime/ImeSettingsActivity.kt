@@ -31,6 +31,8 @@ class ImeSettingsActivity : AppCompatActivity() {
         }
 
         bindings.deployButton.setOnClickListener {
+            IME.resetSession()
+            FULL_DEPLOYING = true
             val userDataDir = userDataDirEt.text.toString()
             val sharedDataDir = sharedDataDirEt.text.toString()
             val dialog = Dialog(this).apply {
@@ -42,6 +44,7 @@ class ImeSettingsActivity : AppCompatActivity() {
             thread {
                 Rime.reinitialize(userDataDir, sharedDataDir)
                 val result = Rime.fullDeployAndWait()
+                FULL_DEPLOYING = false
                 runOnUiThread {
                     dialog.dismiss()
                     val resultStringRes = when (result) {
@@ -76,5 +79,7 @@ class ImeSettingsActivity : AppCompatActivity() {
                 }
             }
         }
+
+        var FULL_DEPLOYING = false
     }
 }

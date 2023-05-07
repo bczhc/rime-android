@@ -1,9 +1,10 @@
 use std::ffi::CStr;
+use std::panic;
 use std::sync::Mutex;
 
 use jni::objects::{JClass, JObject, JString, JValue, JValueGen};
 use jni::sys::{jboolean, jint, jlong, jobjectArray, jsize, jstring};
-use jni::JNIEnv;
+use jni::{JNIEnv, JavaVM};
 use librime_sys::{rime_get_api, RimeKeyCode, RimeModifier};
 use once_cell::sync::Lazy;
 use rime_api::{
@@ -17,25 +18,37 @@ use crate::{
     DISTRIBUTION_VERSION,
 };
 
+static JAVA_VM: Lazy<Mutex<Option<JavaVM>>> = Lazy::new(|| Mutex::new(None));
+
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_initModules(
-    _env: JNIEnv,
-    _: JClass,
-) {
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_jniInit(env: JNIEnv, _: JClass) {
     declare_librime_module_dependencies();
+    let jvm = env.get_java_vm().unwrap();
+    JAVA_VM.lock().unwrap().replace(jvm);
+    panic::set_hook(Box::new(|x| {
+        let info = format!("{}", x);
+        let guard = JAVA_VM.lock().unwrap();
+        let jvm = guard.as_ref().unwrap();
+        let mut env = jvm.attach_current_thread().unwrap();
+        let err_text = format!("Rust panic!!\n{}", info);
+        jni_log(&mut env, &err_text).unwrap();
+        let _ = env.throw(err_text);
+    }));
 }
 
 static RIME_SETUP_FLAG: Lazy<Mutex<bool>> = Lazy::new(|| Mutex::new(false));
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_initialize2(
+pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_initialize(
     mut env: JNIEnv,
     _: JClass,
     user_data_dir: JString,
     shared_data_dir: JString,
 ) {
+    jni_log(&mut env, "Rime initialize").unwrap();
+
     let mut traits = Traits::new();
     traits.set_distribution_name(DISTRIBUTION_NAME);
     traits.set_distribution_code_name(DISTRIBUTION_CODE_NAME);
@@ -58,7 +71,11 @@ pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_initialize2(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_finalize(_env: JNIEnv, _class: JClass) {
+pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_finalize(
+    mut env: JNIEnv,
+    _class: JClass,
+) {
+    jni_log(&mut env, "Rime finalize").unwrap();
     finalize();
 }
 
@@ -83,15 +100,17 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_deploy(
     mut env: JNIEnv,
     _class: JClass,
 ) {
+    jni_log(&mut env, "Rime deploy").unwrap();
     start_maintenance(false).check_or_throw(&mut env).unwrap();
 }
 
 #[no_mangle]
 #[allow(non_snake_case)]
 pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_fullDeployAndWait(
-    _env: JNIEnv,
+    mut env: JNIEnv,
     _class: JClass,
 ) -> jboolean {
+    jni_log(&mut env, "Rime full deploy").unwrap();
     let deploy_result = full_deploy_and_wait();
     match deploy_result {
         DeployResult::Success => true,
@@ -141,7 +160,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_closeSession(
     _class: JClass,
     session: jlong,
 ) {
-    let session = Box::from_raw(session as *mut Session);
+    let mut session = Box::from_raw(session as *mut Session);
     if session.close().is_err() {
         env.throw("Failed to close session").unwrap();
     }

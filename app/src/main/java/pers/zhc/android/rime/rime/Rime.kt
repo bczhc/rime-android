@@ -12,7 +12,8 @@ object Rime {
             JNI.finalize()
             initialized = false
         }
-        JNI.initialize2(userDataDir, sharedDataDir)
+        JNI.initialize(userDataDir, sharedDataDir)
+        initialized = true
     }
 
     fun fullDeployAndWait(): DeployStatus {
