@@ -124,11 +124,10 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_closeSession(
     _class: JClass,
     session: jlong,
 ) {
-    let session = Box::from_raw(session as *mut Session);
+    let session = &*(session as *const Session);
     if session.close().is_err() {
         env.throw("Failed to close session").unwrap();
     }
-    drop(session)
 }
 
 #[no_mangle]
