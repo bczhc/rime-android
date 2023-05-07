@@ -18,9 +18,7 @@ import pers.zhc.android.rime.databinding.ImeCandidatesViewBinding
 import pers.zhc.android.rime.rime.*
 import pers.zhc.android.rime.util.ToastUtils
 import pers.zhc.android.rime.util.fromJsonOrNull
-import pers.zhc.android.rime.util.runOnUiThread
 import pers.zhc.tools.utils.setLinearLayoutManager
-import kotlin.concurrent.thread
 
 class IME : InputMethodService() {
     private var candidatesViewBinding: ImeCandidatesViewBinding? = null
@@ -29,9 +27,7 @@ class IME : InputMethodService() {
 
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         ic = currentInputConnection
-        if (SESSION == null) {
-            setupSession()
-        }
+        trySetupSession()
     }
 
     override fun onCreate() {
@@ -39,7 +35,7 @@ class IME : InputMethodService() {
         val themedContext = ContextThemeWrapper(this, R.style.Theme_Main)
         candidatesViewBinding = ImeCandidatesViewBinding.inflate(LayoutInflater.from(themedContext))
         candidatesAdapter = CandidatesListAdapter()
-        setupSession()
+        trySetupSession()
     }
 
     private fun onKey(event: KeyEvent): Boolean {
@@ -47,6 +43,8 @@ class IME : InputMethodService() {
             hideWindow()
             return true
         }
+
+        trySetupSession()
 
         val session = SESSION ?: return false
         val ic = ic ?: return false
@@ -101,22 +99,34 @@ class IME : InputMethodService() {
         }
     }
 
-    private fun setupSession() {
-        candidatesViewBinding?.setPreedit(getString(R.string.session_preparing_preedit_hint))
-        resetSession()
-        val appContext = applicationContext
-        val configs = GSON.fromJsonOrNull(CONFIGS_FILE.readText(), RimeConfigs::class.java)
-        val userDataDir = configs?.userDataDir ?: ""
-        val sharedDataDir = configs?.sharedDataDir ?: ""
-        val engine = Engine.create(userDataDir, sharedDataDir)
-        thread {
-            val result = engine.waitForDeployment()
-            if (result == Engine.Companion.DeployStatus.SUCCESS) {
-                SESSION = engine.createSession()
-            } else {
-                ToastUtils.show(appContext, R.string.deploy_failure_toast)
-            }
-            engine.setNotificationHandler { messageType, messageValue ->
+    private fun trySetupSession() {
+        if (SESSION != null) {
+            return
+        }
+        if (!Rime.initialized) {
+            val configs = GSON.fromJsonOrNull(CONFIGS_FILE.readText(), RimeConfigs::class.java)
+            val userDataDir = configs?.userDataDir ?: ""
+            val sharedDataDir = configs?.sharedDataDir ?: ""
+            JNI.initialize2(userDataDir, sharedDataDir)
+            setUpOnOptionChangedHandler()
+        }
+        try {
+            JNI.deploy()
+        } catch (_: Exception) {
+        }
+        SESSION = try {
+            Session.create()
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    companion object {
+        private var SESSION: Session? = null
+
+        private fun setUpOnOptionChangedHandler() {
+            val appContext = MyApplication.CONTEXT
+            Rime.setNotificationHandler { messageType, messageValue ->
                 println("Message: " + Pair(messageType, messageValue))
                 if (messageType == "option") {
                     if (messageValue.startsWith('!')) {
@@ -127,17 +137,6 @@ class IME : InputMethodService() {
                     }
                 }
             }
-            runOnUiThread {
-                candidatesViewBinding?.setPreedit("")
-            }
-        }
-    }
-
-    companion object {
-        private var SESSION: Session? = null
-
-        fun resetSession() {
-            SESSION = null
         }
     }
 }

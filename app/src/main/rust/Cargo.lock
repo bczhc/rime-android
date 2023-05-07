@@ -259,7 +259,7 @@ checksum = "a5996294f19bd3aae0453a862ad728f60e6600695733dd5df01da90c54363a3c"
 
 [[package]]
 name = "rime-api"
-version = "0.7.0"
+version = "0.9.1"
 dependencies = [
  "cstr",
  "home",
@@ -275,6 +275,7 @@ dependencies = [
  "anyhow",
  "jni",
  "librime-sys 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "once_cell",
  "rime-api",
 ]
 

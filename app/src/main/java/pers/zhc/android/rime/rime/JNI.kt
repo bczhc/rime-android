@@ -13,25 +13,27 @@ object JNI {
     private external fun initModules()
 
     @JvmStatic
+    external fun initialize2(userDataDir: String, sharedDataDir: String)
+
+    @JvmStatic
+    external fun finalize()
+
+    @JvmStatic
     external fun getRimeVersion(): String
 
     @JvmStatic
-    external fun createEngine(
-        userDataDir: String,
-        sharedDataDir: String?,
-    ): Long
+    external fun deploy()
 
     /**
-     * this function will block
+     * Perform a full-check deployment. This function will block.
      *
      * @return true on success, false otherwise
      */
     @JvmStatic
-    @CheckReturnValue
-    external fun waitForDeployment(engineAddr: Long): Boolean
+    external fun fullDeployAndWait(): Boolean
 
     @JvmStatic
-    external fun createSession(engineAddr: Long): Long
+    external fun createSession(): Long
 
     /**
      * @return true: accepted; false: pass
@@ -42,9 +44,6 @@ object JNI {
 
     @JvmStatic
     external fun closeSession(sessionAddr: Long)
-
-    @JvmStatic
-    external fun releaseEngine(engineAddr: Long)
 
     @JvmStatic
     external fun releaseContext(contextAddr: Long)
@@ -80,5 +79,5 @@ object JNI {
     }
 
     @JvmStatic
-    external fun setNotificationHandler(engineAddr: Long, callback: NotificationHandlerCallback?)
+    external fun setNotificationHandler(callback: NotificationHandlerCallback?)
 }

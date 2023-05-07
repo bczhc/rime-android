@@ -1,14 +1,17 @@
 use std::ffi::CStr;
-use std::time::Duration;
+use std::sync::Mutex;
 
 use jni::objects::{JClass, JObject, JString, JValue, JValueGen};
 use jni::sys::{jboolean, jint, jlong, jobjectArray, jsize, jstring};
 use jni::JNIEnv;
 use librime_sys::{rime_get_api, RimeKeyCode, RimeModifier};
-use rime_api::engine::{DeployResult, Engine};
-use rime_api::{Context, KeyEvent, KeyStatus, Session, Traits};
+use once_cell::sync::Lazy;
+use rime_api::{
+    create_session, finalize, full_deploy_and_wait, initialize, set_notification_handler, setup,
+    start_maintenance, Context, DeployResult, KeyEvent, KeyStatus, Session, Traits,
+};
 
-use crate::helper::{null_jobject, CheckOrThrow};
+use crate::helper::{jni_log, null_jobject, CheckOrThrow};
 use crate::{
     declare_librime_module_dependencies, APP_NAME, DISTRIBUTION_CODE_NAME, DISTRIBUTION_NAME,
     DISTRIBUTION_VERSION,
@@ -16,10 +19,47 @@ use crate::{
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_initModules(_env: JNIEnv, _: JClass) {
-    unsafe {
-        declare_librime_module_dependencies();
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_initModules(
+    _env: JNIEnv,
+    _: JClass,
+) {
+    declare_librime_module_dependencies();
+}
+
+static RIME_SETUP_FLAG: Lazy<Mutex<bool>> = Lazy::new(|| Mutex::new(false));
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_initialize2(
+    mut env: JNIEnv,
+    _: JClass,
+    user_data_dir: JString,
+    shared_data_dir: JString,
+) {
+    let mut traits = Traits::new();
+    traits.set_distribution_name(DISTRIBUTION_NAME);
+    traits.set_distribution_code_name(DISTRIBUTION_CODE_NAME);
+    traits.set_distribution_version(DISTRIBUTION_VERSION);
+    traits.set_app_name(APP_NAME);
+    let result: anyhow::Result<()> = try {
+        // TODO: non-UTF8 path
+        traits.set_user_data_dir(env.get_string(&user_data_dir)?.to_str()?);
+        if !shared_data_dir.is_null() {
+            traits.set_shared_data_dir(env.get_string(&shared_data_dir)?.to_str()?);
+        }
+    };
+    result.check_or_throw(&mut env).unwrap();
+    if !*RIME_SETUP_FLAG.lock().unwrap() {
+        setup(&mut traits);
+        *RIME_SETUP_FLAG.lock().unwrap() = true;
     }
+    initialize(&mut traits);
+}
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_finalize(_env: JNIEnv, _class: JClass) {
+    finalize();
 }
 
 #[no_mangle]
@@ -39,42 +79,20 @@ pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getRimeVersion(
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_createEngine(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_deploy(
     mut env: JNIEnv,
     _class: JClass,
-    userDataDir: JString,
-    sharedDataDir: JString,
-) -> jlong {
-    let result: anyhow::Result<jlong> = try {
-        // TODO: non-UTF8 path
-        let mut traits = Traits::new();
-        traits.set_user_data_dir(env.get_string(&userDataDir)?.to_str()?);
-        if !sharedDataDir.is_null() {
-            traits.set_shared_data_dir(env.get_string(&sharedDataDir)?.to_str()?);
-        }
-        traits.set_distribution_name(DISTRIBUTION_NAME);
-        traits.set_distribution_code_name(DISTRIBUTION_CODE_NAME);
-        traits.set_distribution_version(DISTRIBUTION_VERSION);
-        traits.set_app_name(APP_NAME);
-
-        Box::into_raw(Box::new(Engine::new(traits))) as jlong
-    };
-    if result.is_err() {
-        result.check_or_throw(&mut env).unwrap();
-        return 0;
-    }
-    result.unwrap()
+) {
+    start_maintenance(false).check_or_throw(&mut env).unwrap();
 }
 
 #[no_mangle]
 #[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_waitForDeployment(
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_fullDeployAndWait(
     _env: JNIEnv,
     _class: JClass,
-    engine: jlong,
 ) -> jboolean {
-    let engine = &mut *(engine as *mut Engine);
-    let deploy_result = engine.wait_for_deploy_result(Duration::from_secs_f32(0.1));
+    let deploy_result = full_deploy_and_wait();
     match deploy_result {
         DeployResult::Success => true,
         DeployResult::Failure => false,
@@ -87,13 +105,12 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_waitForDeploym
 pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_createSession(
     mut env: JNIEnv,
     _class: JClass,
-    engine: jlong,
 ) -> jlong {
-    let engine = &mut *(engine as *mut Engine);
-    if engine.create_session().is_err() {
+    let session = create_session();
+    if session.is_err() {
         env.throw("Session creation failed").unwrap();
     }
-    engine.session().unwrap() as *const Session as jlong
+    Box::into_raw(Box::new(session.unwrap())) as *mut Session as jlong
 }
 
 #[no_mangle]
@@ -124,22 +141,11 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_closeSession(
     _class: JClass,
     session: jlong,
 ) {
-    let session = &*(session as *const Session);
+    let session = Box::from_raw(session as *mut Session);
     if session.close().is_err() {
         env.throw("Failed to close session").unwrap();
     }
-}
-
-#[no_mangle]
-#[allow(non_snake_case)]
-pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_releaseEngine(
-    _env: JNIEnv,
-    _class: JClass,
-    engine: jlong,
-) {
-    let mut engine = Box::from_raw(engine as *mut Engine);
-    engine.set_notification_callback(|_, _| {});
-    drop(engine);
+    drop(session);
 }
 
 #[no_mangle]
@@ -271,13 +277,10 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_releaseContext
 pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_setNotificationHandler(
     mut env: JNIEnv,
     _class: JClass,
-    engine: jlong,
     callback: JObject,
 ) {
-    let engine = &mut *(engine as *mut Engine);
-
     if callback.is_null() {
-        engine.set_notification_callback(|_, _| {});
+        set_notification_handler(|_, _| {});
         return;
     }
 
@@ -285,7 +288,7 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_setNotificatio
         let global_callback = env.new_global_ref(callback)?;
         let java_vm = env.get_java_vm()?;
 
-        engine.set_notification_callback(move |t, v| {
+        set_notification_handler(move |t, v| {
             let result: anyhow::Result<()> = try {
                 let mut guard = java_vm.attach_current_thread()?;
                 let env = &mut *guard;

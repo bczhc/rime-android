@@ -9,7 +9,7 @@ import com.google.android.material.textfield.TextInputEditText
 import pers.zhc.android.rime.MyApplication.Companion.GSON
 import pers.zhc.android.rime.databinding.DeployingDialogBinding
 import pers.zhc.android.rime.databinding.ImeSettingsActivityBinding
-import pers.zhc.android.rime.rime.Engine
+import pers.zhc.android.rime.rime.Rime
 import pers.zhc.android.rime.util.fromJsonOrNull
 import java.io.File
 import kotlin.concurrent.thread
@@ -31,9 +31,8 @@ class ImeSettingsActivity : AppCompatActivity() {
         }
 
         bindings.deployButton.setOnClickListener {
-            IME.resetSession()
             val userDataDir = userDataDirEt.text.toString()
-            val sharedDataDir = sharedDataDirEt.text.toString().ifEmpty { null }
+            val sharedDataDir = sharedDataDirEt.text.toString()
             val dialog = Dialog(this).apply {
                 val view = DeployingDialogBinding.inflate(layoutInflater).root
                 setContentView(view)
@@ -41,12 +40,13 @@ class ImeSettingsActivity : AppCompatActivity() {
                 setCanceledOnTouchOutside(false)
             }.also { it.show() }
             thread {
-                val result = Engine.deploy(userDataDir, sharedDataDir)
+                Rime.reinitialize(userDataDir, sharedDataDir)
+                val result = Rime.fullDeployAndWait()
                 runOnUiThread {
                     dialog.dismiss()
                     val resultStringRes = when (result) {
-                        Engine.Companion.DeployStatus.SUCCESS -> R.string.deploy_success_dialog
-                        Engine.Companion.DeployStatus.FAILURE -> R.string.deploy_failure_dialog
+                        Rime.DeployStatus.SUCCESS -> R.string.deploy_success_dialog
+                        Rime.DeployStatus.FAILURE -> R.string.deploy_failure_dialog
                     }
                     MaterialAlertDialogBuilder(this)
                         .setTitle(resultStringRes)
