@@ -58,7 +58,7 @@ object JNI {
     external fun getPreedit(contextAddr: Long): String?
 
     @JvmStatic
-    external fun getCandidates(contextAddr: Long, phantomCandidate: Candidate): Array<Candidate>
+    external fun getCandidates(contextAddr: Long, dummyCandidate: Candidate): Array<Candidate>
 
     @JvmStatic
     external fun getSelectedCandidatesPos(contextAddr: Long): Int
@@ -69,7 +69,7 @@ object JNI {
         val comment: String?,
     )
 
-    val PHANTOM_CANDIDATE = Candidate(null, "", null)
+    val DUMMY_CANDIDATE = Candidate(null, "", null)
 
     @JvmStatic
     external fun getCommit(sessionAddr: Long): String?
@@ -80,4 +80,23 @@ object JNI {
 
     @JvmStatic
     external fun setNotificationHandler(callback: NotificationHandlerCallback?)
+
+    data class Status(
+        val schemaName: String,
+        val schemaId: String,
+        val isDisabled: Boolean,
+        val isComposing: Boolean,
+        val isAsciiMode: Boolean,
+        val isFullShape: Boolean,
+        val isSimplified: Boolean,
+        val isTraditional: Boolean,
+        val isAsciiPunct: Boolean,
+    )
+
+    @Suppress("BooleanLiteralArgument")
+    val DUMMY_STATUS = Status("", "", false, false, false,
+        false, false, false, false)
+
+    @JvmStatic
+    external fun getStatus(sessionAddr: Long, dummyStatus: Status): Status
 }

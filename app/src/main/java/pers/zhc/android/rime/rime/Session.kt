@@ -27,6 +27,10 @@ class Session(private val addr: Long) {
         JNI.closeSession(addr)
     }
 
+    fun getStatus(): JNI.Status {
+        return JNI.getStatus(addr, JNI.DUMMY_STATUS)
+    }
+
     companion object {
         @Throws(RuntimeException::class)
         fun create(): Session {

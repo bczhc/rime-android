@@ -66,6 +66,7 @@ class IME : InputMethodService() {
         if (commit != null) {
             ic.commit(commit)
         }
+        println(session.getStatus())
 
         return true
     }

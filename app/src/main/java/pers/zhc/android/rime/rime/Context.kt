@@ -12,7 +12,7 @@ class Context(private val addr: Long) {
     )
 
     fun getCandidates(): Candidates {
-        val candidates = JNI.getCandidates(addr, JNI.PHANTOM_CANDIDATE)
+        val candidates = JNI.getCandidates(addr, JNI.DUMMY_CANDIDATE)
         val selectedPos = JNI.getSelectedCandidatesPos(addr)
         return Candidates(candidates, selectedPos)
     }

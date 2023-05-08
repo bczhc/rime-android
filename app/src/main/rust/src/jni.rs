@@ -3,7 +3,7 @@ use std::panic;
 use std::sync::Mutex;
 
 use jni::objects::{JClass, JObject, JString, JValue, JValueGen};
-use jni::sys::{jboolean, jint, jlong, jobjectArray, jsize, jstring};
+use jni::sys::{jboolean, jint, jlong, jobject, jobjectArray, jsize, jstring};
 use jni::{JNIEnv, JavaVM};
 use librime_sys::{rime_get_api, RimeKeyCode, RimeModifier};
 use once_cell::sync::Lazy;
@@ -328,4 +328,42 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_setNotificatio
         });
     };
     result.check_or_throw(&mut env).unwrap();
+}
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getStatus(
+    mut env: JNIEnv,
+    _class: JClass,
+    session: jlong,
+    dummy_status: JObject,
+) -> jobject {
+    let result: anyhow::Result<jobject> = try {
+        let session = &*(session as *const Session);
+        let status = session.status()?;
+        let schema_name = env.new_string(status.schema_name())?;
+        let schema_id = env.new_string(status.schema_id())?;
+
+        let status_class = env.get_object_class(&dummy_status)?;
+        env.new_object(
+            &status_class,
+            "(Ljava/lang/String;Ljava/lang/String;ZZZZZZZ)V",
+            &[
+                JValue::Object(&schema_name),
+                JValue::Object(&schema_id),
+                JValue::Bool(status.is_disabled.into()),
+                JValue::Bool(status.is_composing.into()),
+                JValue::Bool(status.is_ascii_mode.into()),
+                JValue::Bool(status.is_full_shape.into()),
+                JValue::Bool(status.is_simplified.into()),
+                JValue::Bool(status.is_traditional.into()),
+                JValue::Bool(status.is_ascii_punct.into()),
+            ],
+        )?
+        .into_raw()
+    };
+    if result.is_err() {
+        result.check_or_throw(&mut env).unwrap();
+    }
+    result.unwrap()
 }

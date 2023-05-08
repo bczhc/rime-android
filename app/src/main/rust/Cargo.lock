@@ -259,7 +259,7 @@ checksum = "a5996294f19bd3aae0453a862ad728f60e6600695733dd5df01da90c54363a3c"
 
 [[package]]
 name = "rime-api"
-version = "0.9.1"
+version = "0.10.0"
 dependencies = [
  "cstr",
  "home",
