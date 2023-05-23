@@ -2,6 +2,7 @@ package pers.zhc.android.rime
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.graphics.Typeface
 import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -11,13 +12,11 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.recyclerview.widget.RecyclerView
-import pers.zhc.android.rime.ImeSettingsActivity.Companion.CONFIGS_FILE
-import pers.zhc.android.rime.MyApplication.Companion.GSON
+import pers.zhc.android.rime.ImeSettingsActivity.Companion.getConfigs
 import pers.zhc.android.rime.databinding.ImeCandidateItemBinding
 import pers.zhc.android.rime.databinding.ImeCandidatesViewBinding
 import pers.zhc.android.rime.rime.*
 import pers.zhc.android.rime.util.ToastUtils
-import pers.zhc.android.rime.util.fromJsonOrNull
 import pers.zhc.tools.utils.setLinearLayoutManager
 
 class IME : InputMethodService() {
@@ -28,6 +27,14 @@ class IME : InputMethodService() {
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         ic = currentInputConnection
         trySetupSession()
+        getConfigs()?.let {
+            runCatching {
+                candidatesAdapter!!.candidatesTypeface = Typeface.createFromFile(it.customFontPath)
+            }.onFailure {
+                ToastUtils.show(this, R.string.invalid_font_toast)
+                candidatesAdapter!!.candidatesTypeface = null
+            }
+        }
     }
 
     override fun onCreate() {
@@ -109,7 +116,7 @@ class IME : InputMethodService() {
             return
         }
         if (!Rime.initialized) {
-            val configs = GSON.fromJsonOrNull(CONFIGS_FILE.readText(), RimeConfigs::class.java)
+            val configs = getConfigs()
             val userDataDir = configs?.userDataDir ?: ""
             val sharedDataDir = configs?.sharedDataDir ?: ""
             Rime.reinitialize(userDataDir, sharedDataDir)
@@ -163,6 +170,12 @@ fun InputConnection.commit(text: String) {
 
 class CandidatesListAdapter : RecyclerView.Adapter<CandidatesListAdapter.MyViewHolder>() {
     private var candidates: Context.Candidates? = null
+    var candidatesTypeface: Typeface? = null
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     class MyViewHolder(bindings: ImeCandidateItemBinding) : RecyclerView.ViewHolder(bindings.root) {
         val candidateTV = bindings.candidateView
@@ -187,6 +200,7 @@ class CandidatesListAdapter : RecyclerView.Adapter<CandidatesListAdapter.MyViewH
         var text = candidateText
         comment?.let { text += " $it" }
         holder.candidateTV.text = text
+        holder.candidateTV.typeface = candidatesTypeface
         if (position == candidates.selectedPos) {
             holder.rootRL.setBackgroundColor(Color.LTGRAY)
         } else {

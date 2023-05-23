@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
 import pers.zhc.android.rime.MyApplication.Companion.GSON
 import pers.zhc.android.rime.databinding.DeployingDialogBinding
 import pers.zhc.android.rime.databinding.ImeSettingsActivityBinding
@@ -15,26 +14,27 @@ import java.io.File
 import kotlin.concurrent.thread
 
 class ImeSettingsActivity : AppCompatActivity() {
-    private lateinit var sharedDataDirEt: TextInputEditText
-    private lateinit var userDataDirEt: TextInputEditText
+    private lateinit var bindings: ImeSettingsActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val bindings = ImeSettingsActivityBinding.inflate(layoutInflater)
         setContentView(bindings.root)
 
-        userDataDirEt = bindings.userDataDirEt
-        sharedDataDirEt = bindings.sharedDataDirEt
-        GSON.fromJsonOrNull(CONFIGS_FILE.readText(), RimeConfigs::class.java)?.let { configs ->
-            userDataDirEt.setText(configs.userDataDir)
-            sharedDataDirEt.setText(configs.sharedDataDir)
+        val userDataDirET = bindings.userDataDirEt
+        val sharedDataDirET = bindings.sharedDataDirEt
+        this.bindings = bindings
+        getConfigs()?.let { configs ->
+            userDataDirET.setText(configs.userDataDir)
+            sharedDataDirET.setText(configs.sharedDataDir)
+            bindings.candidatesFontEt.setText(configs.customFontPath)
         }
 
         bindings.deployButton.setOnClickListener {
             IME.resetSession()
             FULL_DEPLOYING = true
-            val userDataDir = userDataDirEt.text.toString()
-            val sharedDataDir = sharedDataDirEt.text.toString()
+            val userDataDir = userDataDirET.text.toString()
+            val sharedDataDir = sharedDataDirET.text.toString()
             val dialog = Dialog(this).apply {
                 val view = DeployingDialogBinding.inflate(layoutInflater).root
                 setContentView(view)
@@ -65,7 +65,11 @@ class ImeSettingsActivity : AppCompatActivity() {
     }
 
     private fun handleBackPressed() {
-        val configs = RimeConfigs(userDataDirEt.text.toString(), sharedDataDirEt.text.toString())
+        val configs = RimeConfigs(
+            bindings.userDataDirEt.text.toString(),
+            bindings.sharedDataDirEt.text.toString(),
+            bindings.candidatesFontEt.text.toString()
+        )
         val json = GSON.toJson(configs)
         CONFIGS_FILE.writeText(json)
         finish()
@@ -78,6 +82,10 @@ class ImeSettingsActivity : AppCompatActivity() {
                     it.createNewFile()
                 }
             }
+        }
+
+        fun getConfigs(): RimeConfigs? {
+            return GSON.fromJsonOrNull(CONFIGS_FILE.readText(), RimeConfigs::class.java)
         }
 
         var FULL_DEPLOYING = false

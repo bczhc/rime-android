@@ -12,4 +12,6 @@
     <string name="session_preparing_preedit_hint">准备中</string>
     <string name="settings_label">设置</string>
     <string name="input_test_label">测试</string>
+    <string name="candidates_font_file_hint">候选字体文件</string>
+    <string name="invalid_font_toast">无效字体</string>
 </resources>

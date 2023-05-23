@@ -26,5 +26,6 @@
             android:layout_toEndOf="@id/select_label_tv"
             android:layout_centerVertical="true"
             android:gravity="center_vertical"
+            android:includeFontPadding="false"
     />
 </RelativeLayout>
