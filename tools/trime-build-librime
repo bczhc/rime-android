@@ -1,0 +1,25 @@
+#!/bin/env ruby
+
+`rm -rf libs; mkdir libs`
+
+ndk_dir = ARGV[0]
+fail if ndk_dir == nil
+
+targets = 'arm64-v8a-29,x86-29,armeabi-v7a-21,x86_64-29'
+targets.split(',').each do |group|
+  `rm -rf target; mkdir target`
+  Dir.chdir 'target'
+  scan = group.scan(/^(.*)-([0-9]+)$/)
+  abi = scan[0][0]
+  api = scan[0][1]
+  puts [abi, api].inspect
+  lib_copy_dir = "../libs/#{abi}"
+  Dir.mkdir lib_copy_dir
+  system "cmake \
+      -DCMAKE_TOOLCHAIN_FILE=#{ndk_dir}/build/cmake/android.toolchain.cmake \
+      -DANDROID_ABI=#{abi} \
+      -DANDROID_PLATFORM=android-#{api} -G Ninja .."
+  system 'ninja'
+  `cp -v 'librime_jni/librime_jni.so' #{lib_copy_dir}/librime.so`
+  Dir.chdir '..'
+end
