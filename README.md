@@ -1,6 +1,9 @@
 RimeAndroid
 ---
 
+<img style="width: 50%; height: 50%;" src="https://github.com/bczhc/rime-android/assets/49330580/9812c8ae-b23b-4d28-88fa-f16eab83796d"/>
+
+
 ## Build
 Create `config.properties` in the root project, with its
 content like this (just an example on my machine):
