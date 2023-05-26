@@ -12,6 +12,24 @@ plugins {
 
 apply<RustBuildPlugin>()
 
+val configFile = File(rootProject.projectDir, "config.properties")
+if (!configFile.exists()) {
+    throw GradleException("config.properties not exists")
+}
+val configs = Properties().apply {
+    load(configFile.reader())
+}
+
+val ndkTargets = (configs["ndk.target"] ?: throw GradleException("ndk.target missing")) as String
+val ndkTargetsConfig = ndkTargets.split(',').map {
+    val groupValues = Regex("^(.*)-([0-9]+)\$").findAll(it).first().groupValues
+    mapOf(
+        Pair("abi", groupValues[1]),
+        Pair("api", groupValues[2].toInt())
+    )
+}
+val abis = ndkTargetsConfig.map { it["abi"]!! as String }
+
 android {
     namespace = "pers.zhc.android.rime"
     compileSdk = 33
@@ -22,6 +40,10 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
+
+        ndk {
+            abiFilters.addAll(abis)
+        }
     }
 
     buildTypes {
@@ -60,24 +82,6 @@ android {
         }
     }
 }
-
-val configFile = File(rootProject.projectDir, "config.properties")
-if (!configFile.exists()) {
-    throw GradleException("config.properties not exists")
-}
-val configs = Properties().apply {
-    load(configFile.reader())
-}
-
-val ndkTargets = (configs["ndk.target"] ?: throw GradleException("ndk.target missing")) as String
-val ndkTargetsConfig = ndkTargets.split(',').map {
-    val groupValues = Regex("^(.*)-([0-9]+)\$").findAll(it).first().groupValues
-    mapOf(
-        Pair("abi", groupValues[1]),
-        Pair("api", groupValues[2].toInt())
-    )
-}
-val abis = ndkTargetsConfig.map { it["abi"]!! as String }
 
 val jniOutputDir = file("jniLibs").also { it.mkdir() }
 val librimeLibDir = (configs["librime-lib-dir"] ?: throw GradleException("librime-lib-dir missing")) as String
