@@ -69,7 +69,7 @@ val configs = Properties().apply {
     load(configFile.reader())
 }
 
-val ndkTargets = (configs["ndk.targets"] ?: throw GradleException("ndk.targets missing")) as String
+val ndkTargets = (configs["ndk.target"] ?: throw GradleException("ndk.target missing")) as String
 val ndkTargetsConfig = ndkTargets.split(',').map {
     val groupValues = Regex("^(.*)-([0-9]+)\$").findAll(it).first().groupValues
     mapOf(

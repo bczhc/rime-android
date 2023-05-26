@@ -10,7 +10,9 @@ WORKDIR /
 
 RUN apt update && \
     export DEBIAN_FRONTEND=noninteractive && \
-    apt install openjdk-17-jdk unzip curl gcc git cmake make ninja -y
+    apt install openjdk-17-jdk unzip curl gcc git cmake make ninja-build wget ruby opencc -y && \
+    # See https://github.com/bczhc/some-tools/blob/aa86a52331415291cb1bea940eceba7d34d7ece4/Dockerfile#L14-L26
+    apt install clang gcc-multilib -y
 
 # Set up SDK
 RUN mkdir sdk && \
@@ -27,6 +29,8 @@ RUN git clone https://github.com/osfans/trime --recursive && \
     cd app/src/main/jni && \
     /app/tools/trime-build-librime "/sdk/ndk/$ndk_version" && \
     [ -f ./librime/src/rime_api.h ]
+
+WORKDIR /app
 
 # Set up configurations
 RUN echo 'sdk.dir=/sdk' > local.properties && \
@@ -47,9 +51,16 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > install && \
     ./tools/configure-rust
 
 # Build
-RUN . ~/.cargo/env && \
-    for a in $(echo $full_targets | sed "s/,/ /g"); do \
+RUN mkdir /apks && \
+    . ~/.cargo/env && \
+    for target in $(echo $full_targets | sed "s/,/ /g"); do \
+      echo "Build variant: $target" && \
+      sed -ri "s/^(ndk\.target)=.*/\1=$target/" config.properties && \
       ./gradlew asR && \
-      cp -v app/build/outputs/apk/release/app-release.apk /; \
-    done
+      cp -v app/build/outputs/apk/release/app-release.apk /apks/$target.apk; \
+    done && \
+    echo "Build variant: universal" && \
+    sed -ri "s/^(ndk\.target)=.*/\1=$full_targets/" config.properties && \
+    ./gradlew asR && \
+    cp -v app/build/outputs/apk/release/app-release.apk /apks/universal.apk
 

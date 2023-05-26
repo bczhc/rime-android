@@ -19,7 +19,10 @@ targets.split(',').each do |group|
       -DCMAKE_TOOLCHAIN_FILE=#{ndk_dir}/build/cmake/android.toolchain.cmake \
       -DANDROID_ABI=#{abi} \
       -DANDROID_PLATFORM=android-#{api} -G Ninja .."
+  fail unless $?.success?
   system 'ninja'
+  fail unless $?.success?
   `cp -v 'librime_jni/librime_jni.so' #{lib_copy_dir}/librime.so`
+  fail unless $?.success?
   Dir.chdir '..'
 end
