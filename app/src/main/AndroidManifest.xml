@@ -64,6 +64,16 @@
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
+        <activity
+                android:name=".KeyTestActivity"
+                android:exported="true"
+                android:theme="@style/Theme.Main"
+                android:label="@string/input_test_label"
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

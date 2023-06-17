@@ -31,7 +31,7 @@ class ImeSettingsActivity : AppCompatActivity() {
         }
 
         bindings.deployButton.setOnClickListener {
-            IME.resetSession()
+            Session.resetSession()
             FULL_DEPLOYING = true
             val userDataDir = userDataDirET.text.toString()
             val sharedDataDir = sharedDataDirET.text.toString()

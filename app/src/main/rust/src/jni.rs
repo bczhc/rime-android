@@ -367,3 +367,20 @@ pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_getStatus(
     }
     result.unwrap()
 }
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub unsafe extern "system" fn Java_pers_zhc_android_rime_rime_JNI_simulateKeys(
+    mut env: JNIEnv,
+    _class: JClass,
+    session: jlong,
+    key_sequence: JString,
+) {
+    let result: anyhow::Result<()> = try {
+        let session = &mut *(session as *mut Session);
+        let keys = env.get_string(&key_sequence)?;
+        let keys = keys.to_str()?;
+        session.simulate_key_sequence(keys)?;
+    };
+    result.check_or_throw(&mut env).unwrap();
+}

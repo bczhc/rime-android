@@ -59,6 +59,11 @@ class MainActivity : AppCompatActivity() {
                     // input test
                     startActivity(Intent(this, InputTestActivity::class.java))
                 }
+
+                4 -> {
+                    // dictionary test
+                    startActivity(Intent(this, KeyTestActivity::class.java))
+                }
             }
         }
     }

@@ -99,4 +99,7 @@ object JNI {
 
     @JvmStatic
     external fun getStatus(sessionAddr: Long, dummyStatus: Status): Status
+
+    @JvmStatic
+    external fun simulateKeys(sessionAddr: Long, keySequence: String)
 }

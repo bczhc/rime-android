@@ -26,7 +26,8 @@ class IME : InputMethodService() {
 
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         ic = currentInputConnection
-        trySetupSession()
+        Session.trySetupSession()
+
         getConfigs()?.let {
             runCatching {
                 candidatesAdapter!!.candidatesTypeface = Typeface.createFromFile(it.customFontPath)
@@ -42,7 +43,7 @@ class IME : InputMethodService() {
         val themedContext = ContextThemeWrapper(this, R.style.Theme_Main)
         candidatesViewBinding = ImeCandidatesViewBinding.inflate(LayoutInflater.from(themedContext))
         candidatesAdapter = CandidatesListAdapter()
-        trySetupSession()
+        Session.trySetupSession()
     }
 
     private fun onKey(event: KeyEvent): Boolean {
@@ -51,9 +52,9 @@ class IME : InputMethodService() {
             return true
         }
 
-        trySetupSession()
+        Session.trySetupSession()
 
-        val session = SESSION ?: return false
+        val session = Session.SESSION ?: return false
         val ic = ic ?: return false
         val candidatesViewBinding = candidatesViewBinding ?: return false
 
@@ -104,58 +105,6 @@ class IME : InputMethodService() {
         super.onComputeInsets(outInsets)
         if (!isFullscreenMode) {
             outInsets.contentTopInsets = outInsets.visibleTopInsets
-        }
-    }
-
-    private fun trySetupSession() {
-        if (SESSION != null) {
-            return
-        }
-        // when full-check deployment is in progress, prevent IME from creating sessions
-        if (ImeSettingsActivity.FULL_DEPLOYING) {
-            return
-        }
-        if (!Rime.initialized) {
-            val configs = getConfigs()
-            val userDataDir = configs?.userDataDir ?: ""
-            val sharedDataDir = configs?.sharedDataDir ?: ""
-            Rime.reinitialize(userDataDir, sharedDataDir)
-            setUpOnOptionChangedHandler()
-        }
-        try {
-            JNI.deploy()
-        } catch (_: Exception) {
-        }
-        SESSION = try {
-            Session.create()
-        } catch (_: Exception) {
-            null
-        }
-    }
-
-    companion object {
-        private var SESSION: Session? = null
-
-        fun resetSession() {
-            SESSION?.let {
-                it.close()
-                SESSION = null
-            }
-        }
-
-        private fun setUpOnOptionChangedHandler() {
-            val appContext = MyApplication.CONTEXT
-            Rime.setNotificationHandler { messageType, messageValue ->
-                println("Message: " + Pair(messageType, messageValue))
-                if (messageType == "option") {
-                    if (messageValue.startsWith('!')) {
-                        val option = messageValue.substring(1)
-                        ToastUtils.show(appContext, "$option: off")
-                    } else {
-                        ToastUtils.show(appContext, "$messageValue: on")
-                    }
-                }
-            }
         }
     }
 }

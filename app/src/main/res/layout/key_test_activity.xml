@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:padding="5sp"
+>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+              android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+              tools:text="Pre-edit"
+              android:id="@+id/preedit_view"
+              android:layout_alignParentTop="true"
+    />
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recycler_view"
+            tools:listitem="@android:layout/simple_list_item_1"
+            tools:itemCount="5"
+            android:layout_below="@id/preedit_view"
+            android:layout_above="@id/bottom_ll"
+    />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:layout_alignParentBottom="true"
+                  android:id="@+id/bottom_ll"
+    >
+        <EditText android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  tools:ignore="Autofill,LabelFor,TextFields"
+                  android:id="@+id/commit_tv"
+                  android:gravity="top|start"
+                  android:maxLines="4"
+        />
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/input_til"
+        >
+            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/key_input_et_hint"
+                    android:id="@+id/input_et"
+            />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+</RelativeLayout>

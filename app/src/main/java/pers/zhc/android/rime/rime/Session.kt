@@ -31,6 +31,10 @@ class Session(private val addr: Long) {
         return JNI.getStatus(addr, JNI.DUMMY_STATUS)
     }
 
+    fun simulateKeys(keySequence: String) {
+        return JNI.simulateKeys(addr, keySequence)
+    }
+
     companion object {
         @Throws(RuntimeException::class)
         fun create(): Session {
