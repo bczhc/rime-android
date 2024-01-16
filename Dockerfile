@@ -25,7 +25,8 @@ RUN mkdir sdk && \
 # Clone Trime and build librime
 RUN git clone https://github.com/osfans/trime --recursive && \
     cd trime && \
-    git apply /app/trime.patch && \
+    git checkout v3.2.16 && \
+    git apply /app/trime-v3.2.16.patch && \
     cd app/src/main/jni && \
     /app/tools/trime-build-librime "/sdk/ndk/$ndk_version" && \
     [ -f ./librime/src/rime_api.h ]
