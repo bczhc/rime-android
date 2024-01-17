@@ -1,7 +1,6 @@
 package pers.zhc.android.rime
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.graphics.Typeface
 import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
@@ -12,10 +11,13 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import pers.zhc.android.rime.ImeSettingsActivity.Companion.getConfigs
 import pers.zhc.android.rime.databinding.ImeCandidateItemBinding
 import pers.zhc.android.rime.databinding.ImeCandidatesViewBinding
-import pers.zhc.android.rime.rime.*
+import pers.zhc.android.rime.rime.Context
+import pers.zhc.android.rime.rime.KeyStatus
+import pers.zhc.android.rime.rime.toRimeKey
 import pers.zhc.android.rime.util.ToastUtils
 import pers.zhc.tools.utils.setLinearLayoutManager
 
@@ -41,7 +43,15 @@ class IME : InputMethodService() {
     override fun onCreate() {
         super.onCreate()
         val themedContext = ContextThemeWrapper(this, R.style.Theme_Main)
-        candidatesViewBinding = ImeCandidatesViewBinding.inflate(LayoutInflater.from(themedContext))
+        candidatesViewBinding = ImeCandidatesViewBinding.inflate(LayoutInflater.from(themedContext)).also {
+            it.preeditView.setBackgroundColor(
+                MaterialColors.getColor(
+                    themedContext,
+                    R.attr.candidatesBackgroundColor,
+                    "Error"
+                )
+            )
+        }
         candidatesAdapter = CandidatesListAdapter()
         Session.trySetupSession()
     }
@@ -150,10 +160,23 @@ class CandidatesListAdapter : RecyclerView.Adapter<CandidatesListAdapter.MyViewH
         comment?.let { text += " $it" }
         holder.candidateTV.text = text
         holder.candidateTV.typeface = candidatesTypeface
+
+        val context = holder.rootRL.context
+        val selectedColor = MaterialColors.getColor(
+            context,
+            R.attr.candidatesSelectedColor,
+            "Error"
+        )
+        val backgroundColor = MaterialColors.getColor(
+            context,
+            R.attr.candidatesBackgroundColor,
+            "Error"
+        )
+
         if (position == candidates.selectedPos) {
-            holder.rootRL.setBackgroundColor(Color.LTGRAY)
+            holder.rootRL.setBackgroundColor(selectedColor)
         } else {
-            holder.rootRL.setBackgroundColor(Color.WHITE)
+            holder.rootRL.setBackgroundColor(backgroundColor)
         }
     }
 
