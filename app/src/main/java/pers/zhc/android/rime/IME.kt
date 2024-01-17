@@ -31,10 +31,14 @@ class IME : InputMethodService() {
         Session.trySetupSession()
 
         getConfigs()?.let {
-            runCatching {
-                candidatesAdapter!!.candidatesTypeface = Typeface.createFromFile(it.customFontPath)
-            }.onFailure {
-                ToastUtils.show(this, R.string.invalid_font_toast)
+            if (it.customFontPath.isNotEmpty()) {
+                runCatching {
+                    candidatesAdapter!!.candidatesTypeface = Typeface.createFromFile(it.customFontPath)
+                }.onFailure {
+                    ToastUtils.show(this, R.string.invalid_font_toast)
+                    candidatesAdapter!!.candidatesTypeface = null
+                }
+            } else {
                 candidatesAdapter!!.candidatesTypeface = null
             }
         }
