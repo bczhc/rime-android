@@ -67,6 +67,10 @@ pub extern "system" fn Java_pers_zhc_android_rime_rime_JNI_initialize(
         *RIME_SETUP_FLAG.lock().unwrap() = true;
     }
     initialize(&mut traits);
+
+    jni_log(&mut env, "---------- Traits: ----------").unwrap();
+    jni_log(&mut env, format!("{:?}", traits).as_str()).unwrap();
+    jni_log(&mut env, "------------------------------").unwrap();
 }
 
 #[no_mangle]
