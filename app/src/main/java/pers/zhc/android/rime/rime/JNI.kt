@@ -64,9 +64,9 @@ object JNI {
     external fun getSelectedCandidatesPos(contextAddr: Long): Int
 
     data class Candidate(
-        val selectLabel: String?,
+        val selectLabel: String? = null,
         val text: String,
-        val comment: String?,
+        val comment: String? = null,
     )
 
     val DUMMY_CANDIDATE = Candidate(null, "", null)

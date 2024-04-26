@@ -9,15 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
-import android.widget.LinearLayout
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import pers.zhc.android.rime.ImeSettingsActivity.Companion.getConfigs
 import pers.zhc.android.rime.databinding.ImeCandidateItemBinding
 import pers.zhc.android.rime.databinding.ImeCandidatesViewBinding
 import pers.zhc.android.rime.rime.Context
+import pers.zhc.android.rime.rime.JNI
 import pers.zhc.android.rime.rime.KeyStatus
 import pers.zhc.android.rime.rime.toRimeKey
 import pers.zhc.android.rime.util.ToastUtils
@@ -188,7 +187,12 @@ class CandidatesListAdapter : RecyclerView.Adapter<CandidatesListAdapter.MyViewH
 
     @SuppressLint("NotifyDataSetChanged")
     fun update(candidates: Context.Candidates) {
-        this.candidates = candidates
+        if (candidates.candidates.isEmpty()) {
+            // leave a default item in the RecyclerView
+            this.candidates = Context.Candidates(arrayOf(JNI.Candidate(text = "Rime")), -1)
+        } else {
+            this.candidates = candidates
+        }
         notifyDataSetChanged()
     }
 }
