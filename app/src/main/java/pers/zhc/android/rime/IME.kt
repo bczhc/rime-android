@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import android.widget.LinearLayout
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import pers.zhc.android.rime.ImeSettingsActivity.Companion.getConfigs
@@ -110,7 +112,7 @@ class IME : InputMethodService() {
         setCandidatesViewShown(true)
         candidatesViewBinding!!.recyclerView.apply {
             adapter = candidatesAdapter!!
-            setLinearLayoutManager()
+            setLinearLayoutManager(RecyclerView.HORIZONTAL)
         }
         return candidatesViewBinding!!.root
     }

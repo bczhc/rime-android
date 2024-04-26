@@ -38,8 +38,8 @@ fun RecyclerView.addDividerLines() {
     this.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
 }
 
-fun RecyclerView.setLinearLayoutManager() {
-    this.layoutManager = LinearLayoutManager(this.context)
+fun RecyclerView.setLinearLayoutManager(orientation: Int = RecyclerView.VERTICAL) {
+    this.layoutManager = LinearLayoutManager(this.context, orientation, false)
 }
 
 
