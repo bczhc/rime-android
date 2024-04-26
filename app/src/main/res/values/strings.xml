@@ -15,4 +15,5 @@
     <string name="candidates_font_file_hint">候选字体文件</string>
     <string name="invalid_font_toast">无效字体</string>
     <string name="key_input_et_hint">按键输入</string>
+    <string name="please_grant_permission">请同意权限</string>
 </resources>
