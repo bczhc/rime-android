@@ -62,6 +62,8 @@ class IME : InputMethodService() {
     }
 
     private fun onKey(event: KeyEvent): Boolean {
+        println("Event: $event")
+
         if (event.keyCode == KeyEvent.KEYCODE_BACK && isInputViewShown) {
             hideWindow()
             return true
@@ -72,6 +74,21 @@ class IME : InputMethodService() {
         val session = Session.SESSION ?: return false
         val ic = ic ?: return false
         val candidatesViewBinding = candidatesViewBinding ?: return false
+
+        // intercept keys with alt pressed, and don't pass them to librime
+        // currently this app defines four shortcut keys acting as arrows (vim-like):
+        // - Alt+[HJKL]
+        if (event.isAltPressed) {
+            var intercept = true
+            when (event.keyCode) {
+                KeyEvent.KEYCODE_H -> ic.sendKeyEvent(KeyEvent(event.action, KeyEvent.KEYCODE_DPAD_LEFT))
+                KeyEvent.KEYCODE_L -> ic.sendKeyEvent(KeyEvent(event.action, KeyEvent.KEYCODE_DPAD_RIGHT))
+                KeyEvent.KEYCODE_J -> ic.sendKeyEvent(KeyEvent(event.action, KeyEvent.KEYCODE_DPAD_DOWN))
+                KeyEvent.KEYCODE_K -> ic.sendKeyEvent(KeyEvent(event.action, KeyEvent.KEYCODE_DPAD_UP))
+                else -> intercept = false
+            }
+            if (intercept) return true
+        }
 
         val rimeKeyEvent = toRimeKey(event) ?: return false
         val keyStatus = session.processKey(rimeKeyEvent)
