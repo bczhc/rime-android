@@ -25,6 +25,8 @@ RUN mkdir sdk && \
 # Fetch Trime submodule and build librime from it
 RUN cd /app && \
     git submodule update --init --recursive && \
+    # patch librime
+    ./patch-librime && \
     cd trime && \
     git apply /app/trime.patch && \
     cd app/src/main/jni && \
