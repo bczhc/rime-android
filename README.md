@@ -1,7 +1,11 @@
 RimeAndroid
 ---
 
+On Android mobile phone:<br/>
 <img style="width: 50%; height: 50%;" src="https://github.com/bczhc/rime-android/assets/49330580/9812c8ae-b23b-4d28-88fa-f16eab83796d"/>
+
+On Android tablet:<br/>
+<img style="width: 100%;" src="https://github.com/user-attachments/assets/9699631d-50ff-4dc9-9aba-470b1e471241"/>
 
 
 ## Build
