@@ -10,6 +10,8 @@ On Android tablet:<br/>
 
 ## Build
 
+TODO (sorry for my laziness).
+
 See [Dockerfile](https://github.com/bczhc/rime-android/blob/master/Dockerfile).
 
 For the build of librime, please refer to this [gist](https://gist.github.com/bczhc/cd271734f812f32b4c9c70c766f1c95f).
