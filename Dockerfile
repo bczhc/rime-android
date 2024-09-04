@@ -22,14 +22,15 @@ RUN mkdir sdk && \
     ./cmdline-tools/bin/sdkmanager --sdk_root=./sdk --install "ndk;$ndk_version" && \
     ./cmdline-tools/bin/sdkmanager --sdk_root=./sdk --install "cmake;$cmake_version"
 
-# Clone Trime and build librime
-RUN git clone https://github.com/osfans/trime --recursive && \
+# Fetch Trime submodule and build librime from it
+RUN cd /app && \
+    git submodule update --init --recursive && \
     cd trime && \
-    git checkout v3.2.16 && \
-    git apply /app/trime-v3.2.16.patch && \
+    git apply /app/trime.patch && \
     cd app/src/main/jni && \
     /app/tools/trime-build-librime "/sdk/ndk/$ndk_version" && \
     [ -f ./librime/src/rime_api.h ]
+
 
 WORKDIR /app
 
