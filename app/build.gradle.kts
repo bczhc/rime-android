@@ -109,6 +109,15 @@ configure<RustBuildPluginExtension> {
     targetEnv.set(rustBuildTargetEnv)
 }
 
+println("---------- Rust Build Info ----------")
+println("srcDir: ${"$projectDir/src/main/rust"}")
+println("ndkDir: ${android.ndkDirectory.path}")
+println("targets: $ndkTargetsConfig")
+println("buildType: $ndkBuildType")
+println("outputDir: ${jniOutputDir.path}")
+println("targetEnv: $rustBuildTargetEnv")
+println()
+
 val compileRustTask = tasks.findByName(RustBuildPlugin.TASK_NAME())!!
 val copyLibrimeTask = task("copyLibrimeTask") {
     doLast {

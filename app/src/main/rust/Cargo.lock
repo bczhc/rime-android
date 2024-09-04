@@ -294,9 +294,9 @@ checksum = "adad44e29e4c806119491a7f06f03de4d1af22c3a680dd47f1e6e179439d1f56"
 
 [[package]]
 name = "rime-api"
-version = "0.12.1"
+version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3d2572c915a55de947bf75c6a8545b6ca23b198e132a30f1bcf7f42a42ae391"
+checksum = "dd95236592b58240aef151bebfe0555e0ca572e7c2a6e3a4f7fbd1b956c002bd"
 dependencies = [
  "cstr",
  "home",
