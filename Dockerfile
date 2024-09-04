@@ -39,8 +39,8 @@ RUN echo 'sdk.dir=/sdk' > local.properties && \
     echo "ndk.dir=/sdk/ndk/$ndk_version" >> local.properties && \
     echo "ndk.target=$full_targets" >> config.properties && \
     echo 'ndk.buildType=release' >> config.properties && \
-    echo 'librime-lib-dir=/trime/app/src/main/jni/libs' >> config.properties && \
-    echo 'librime-include-dir=/trime/app/src/main/jni/librime/src' >> config.properties
+    echo 'librime-lib-dir=/app/trime/app/src/main/jni/libs' >> config.properties && \
+    echo 'librime-include-dir=/app/trime/app/src/main/jni/librime/src' >> config.properties
 
 
 # Install Rust
