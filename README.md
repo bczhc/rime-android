@@ -38,4 +38,4 @@ Then do `./gradlew asD` for debug build and `./gradlew asR` for release build.
 
 ## Known Issues
 - May crash for unknown reasons. (Not that serious, or I'll fix it...)
-- Candidates won't show on Android14. (I tested Xiaomi 14 Ultra). 🤬
+- Candidates won't show on Android14. (I tested Xiaomi 14 Pro). 🤬
