@@ -54,11 +54,12 @@ android {
             isDebuggable = true
             isJniDebuggable = true
             signingConfig = signingConfigs["debug"]
+            proguardFiles("proguard-rules-debug.pro")
         }
         types["release"]!!.apply {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles("proguard-rules.pro")
+            proguardFiles("proguard-rules-debug.pro")
             isDebuggable = true
             isJniDebuggable = true
             signingConfig = signingConfigs["debug"]
