@@ -81,6 +81,16 @@ android {
             jniLibs.srcDirs("jniLibs")
         }
     }
+
+    signingConfigs {
+        val configs = asMap
+        configs["debug"]!!.apply {
+            storeFile = file("release.keystore")
+            storePassword = "123456"
+            keyAlias = "alias"
+            keyPassword = "123456"
+        }
+    }
 }
 
 val jniOutputDir = file("jniLibs").also { it.mkdir() }
