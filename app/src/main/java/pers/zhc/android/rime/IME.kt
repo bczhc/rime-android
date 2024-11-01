@@ -105,6 +105,7 @@ class IME : InputMethodService() {
         val commit = session.getCommit()
         if (commit != null) {
             ic.commit(commit)
+            Logging.writeLog(commit)
         }
         println(session.getStatus())
 
