@@ -3,12 +3,14 @@ package pers.zhc.android.rime
 import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.inputmethodservice.InputMethodService
+import android.os.Build
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
@@ -109,8 +111,7 @@ class IME : InputMethodService() {
             return false
         }
 
-        val context = session.getContext()
-        if (context != null) {
+        session.getContext()?.let { context ->
             candidatesViewBinding.setPreedit(context.getPreedit() ?: "")
             val candidates = context.getCandidates()
             candidatesAdapter!!.update(candidates)
@@ -121,6 +122,13 @@ class IME : InputMethodService() {
                     ic.finishComposingText()
                 } else {
                     ic.setComposingText(context.getPreedit() ?: "", 1)
+                }
+            }
+
+            if (context.getPreedit() != "") {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    @Suppress("DEPRECATION")
+                    requestShowSelf(InputMethodManager.SHOW_FORCED)
                 }
             }
         }
