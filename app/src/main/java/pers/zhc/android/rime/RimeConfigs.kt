@@ -4,4 +4,5 @@ data class RimeConfigs(
     val userDataDir: String,
     val sharedDataDir: String,
     val customFontPath: String,
+    val showComposing: Boolean,
 )

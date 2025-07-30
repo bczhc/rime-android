@@ -28,6 +28,7 @@ class ImeSettingsActivity : AppCompatActivity() {
             userDataDirET.setText(configs.userDataDir)
             sharedDataDirET.setText(configs.sharedDataDir)
             bindings.candidatesFontEt.setText(configs.customFontPath)
+            bindings.cbShowComposing.isChecked = configs.showComposing
         }
 
         bindings.deployButton.setOnClickListener {
@@ -68,7 +69,8 @@ class ImeSettingsActivity : AppCompatActivity() {
         val configs = RimeConfigs(
             bindings.userDataDirEt.text.toString(),
             bindings.sharedDataDirEt.text.toString(),
-            bindings.candidatesFontEt.text.toString()
+            bindings.candidatesFontEt.text.toString(),
+            bindings.cbShowComposing.isChecked,
         )
         val json = GSON.toJson(configs)
         CONFIGS_FILE.writeText(json)

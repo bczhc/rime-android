@@ -27,11 +27,17 @@ class IME : InputMethodService() {
     private var ic: InputConnection? = null
     private var candidatesAdapter: CandidatesListAdapter? = null
 
+    /**
+     * Rime configs for this session. This is fetched in [onStartInput]
+     */
+    private var rimeConfigs: RimeConfigs? = null
+
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         ic = currentInputConnection
         Session.trySetupSession()
 
-        getConfigs()?.let {
+        rimeConfigs = getConfigs()
+        rimeConfigs?.let {
             if (it.customFontPath.isNotEmpty()) {
                 runCatching {
                     candidatesAdapter!!.candidatesTypeface = Typeface.createFromFile(it.customFontPath)
@@ -108,6 +114,15 @@ class IME : InputMethodService() {
             candidatesViewBinding.setPreedit(context.getPreedit() ?: "")
             val candidates = context.getCandidates()
             candidatesAdapter!!.update(candidates)
+
+            if (rimeConfigs?.showComposing == true) {
+                if ((context.getPreedit() ?: "") == "") {
+                    ic.setComposingText("", 1)
+                    ic.finishComposingText()
+                } else {
+                    ic.setComposingText(context.getPreedit() ?: "", 1)
+                }
+            }
         }
         val commit = session.getCommit()
         if (commit != null) {
