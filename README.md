@@ -1,12 +1,14 @@
 RimeAndroid
 ---
 
-On Android mobile phone:<br/>
+On Android mobile phone (vertical candidates):<br/>
 <img style="width: 50%; height: 50%;" src="https://github.com/bczhc/rime-android/assets/49330580/9812c8ae-b23b-4d28-88fa-f16eab83796d"/>
 
-On Android tablet: (horizontal candidates)<br/>
+On Android tablet (horizontal candidates):<br/>
 <img style="width: 100%;" src="https://github.com/user-attachments/assets/9699631d-50ff-4dc9-9aba-470b1e471241"/>
 
+Demo:<br/>
+<img style="width: 50%;" src="https://github.com/user-attachments/assets/3ca948cd-2cbe-4b82-9990-f79c18b9c14b"/>
 
 ## Build
 
@@ -18,7 +20,6 @@ For the build of librime, please refer to this [gist](https://gist.github.com/bc
 
 ## Known Issues
 - May crash at specific scenarios. (more like a lack of error handling etc. Not that serious, or I'll fix it...)
-- Candidates won't show on Android14. (I tested Xiaomi 14 Pro). 🤬
 
 Note this app is developed only for my personal use. I've tried Trime or other Android distributions for Rime (like "中文输入法"),
 however they all behave differently as I expected, plus, randomly crash etc. Yea I may misconfigured the config files
