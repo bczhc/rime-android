@@ -61,7 +61,14 @@ class IME : InputMethodService() {
         Session.trySetupSession()
     }
 
+    override fun onEvaluateFullscreenMode(): Boolean {
+        return false
+    }
+
     private fun onKey(event: KeyEvent): Boolean {
+        updateFullscreenMode()
+        setCandidatesViewShown(false)
+        isExtractViewShown = false
         println("Event: $event")
 
         if (event.keyCode == KeyEvent.KEYCODE_BACK && isInputViewShown) {
@@ -125,8 +132,7 @@ class IME : InputMethodService() {
         return true
     }
 
-    override fun onCreateCandidatesView(): View {
-        setCandidatesViewShown(true)
+    override fun onCreateInputView(): View {
         candidatesViewBinding!!.recyclerView.apply {
             adapter = candidatesAdapter!!
             setLinearLayoutManager(RecyclerView.HORIZONTAL)
@@ -136,9 +142,7 @@ class IME : InputMethodService() {
 
     override fun onComputeInsets(outInsets: Insets) {
         super.onComputeInsets(outInsets)
-        if (!isFullscreenMode) {
-            outInsets.contentTopInsets = outInsets.visibleTopInsets
-        }
+        outInsets.contentTopInsets = outInsets.visibleTopInsets
     }
 }
 
