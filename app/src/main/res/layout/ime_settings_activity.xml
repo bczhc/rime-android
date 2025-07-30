@@ -1,78 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MainActivity"
-        android:orientation="vertical"
-        android:padding="10dp"
->
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".MainActivity">
+
     <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="10dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="10dp"
-    >
-        <LinearLayout
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp"
-        >
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                      android:text="Rime"
-                      tools:ignore="HardcodedText"
-                      android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-                      android:paddingHorizontal="5sp"
-            />
+                android:paddingHorizontal="5sp"
+                android:text="Rime"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                tools:ignore="HardcodedText"/>
+
             <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
                 <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/rime_user_data_dir"
-                        android:id="@+id/user_data_dir_et"
-                        tools:text="/storage/emulated/0/rime"
-                />
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/user_data_dir_et"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/rime_shared_data_dir"
-                        android:id="@+id/shared_data_dir_et"
-                        tools:text="/storage/emulated/0/rime-data"
-                />
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.button.MaterialButton
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="@string/deploy_button"
-                    android:id="@+id/deploy_button"
-            />
+                    android:hint="@string/rime_user_data_dir"
+                    tools:text="/storage/emulated/0/rime"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/shared_data_dir_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rime_shared_data_dir"
+                    tools:text="/storage/emulated/0/rime-data"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deploy_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/deploy_button"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-    <com.google.android.material.card.MaterialCardView
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/candidates_font_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-        >
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:padding="10dp"
-                android:layout_height="wrap_content">
-            <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/candidates_font_file_hint"
-                    android:id="@+id/candidates_font_et"
-            >
-            </com.google.android.material.textfield.TextInputEditText>
-        </com.google.android.material.textfield.TextInputLayout>
-    </com.google.android.material.card.MaterialCardView>
+            android:hint="@string/candidates_font_file_hint"></com.google.android.material.textfield.TextInputEditText>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
         android:layout_width="match_parent"
@@ -80,4 +79,9 @@
         android:text="@string/settings_show_composing"
         android:id="@+id/cb_show_composing"
         />
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_hide_candidates"
+        android:id="@+id/cb_hide_candidates"/>
 </LinearLayout>

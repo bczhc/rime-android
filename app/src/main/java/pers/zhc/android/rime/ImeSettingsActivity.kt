@@ -29,6 +29,7 @@ class ImeSettingsActivity : AppCompatActivity() {
             sharedDataDirET.setText(configs.sharedDataDir)
             bindings.candidatesFontEt.setText(configs.customFontPath)
             bindings.cbShowComposing.isChecked = configs.showComposing
+            bindings.cbHideCandidates.isChecked = configs.hideCandidates
         }
 
         bindings.deployButton.setOnClickListener {
@@ -71,6 +72,7 @@ class ImeSettingsActivity : AppCompatActivity() {
             bindings.sharedDataDirEt.text.toString(),
             bindings.candidatesFontEt.text.toString(),
             bindings.cbShowComposing.isChecked,
+            bindings.cbHideCandidates.isChecked,
         )
         val json = GSON.toJson(configs)
         CONFIGS_FILE.writeText(json)

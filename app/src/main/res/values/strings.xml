@@ -17,4 +17,5 @@
     <string name="key_input_et_hint">按键输入</string>
     <string name="please_grant_permission">请同意权限</string>
     <string name="settings_show_composing">文本中显示输入码</string>
+    <string name="settings_hide_candidates">隐藏候选（盲打模式）</string>
 </resources>

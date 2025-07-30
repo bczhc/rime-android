@@ -5,4 +5,5 @@ data class RimeConfigs(
     val sharedDataDir: String,
     val customFontPath: String,
     val showComposing: Boolean,
+    val hideCandidates: Boolean,
 )

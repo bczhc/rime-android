@@ -152,7 +152,8 @@ class IME : InputMethodService() {
 
     override fun onEvaluateInputViewShown(): Boolean {
         super.onEvaluateInputViewShown()
-        return true
+        val hideCandidates = rimeConfigs?.hideCandidates ?: false
+        return !hideCandidates
     }
 
     override fun onCreateInputView(): View {
