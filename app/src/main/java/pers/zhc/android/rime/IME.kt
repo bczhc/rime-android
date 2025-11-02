@@ -80,7 +80,7 @@ class IME : InputMethodService() {
         println("Event: $event")
 
         if (event.keyCode == KeyEvent.KEYCODE_BACK && isInputViewShown) {
-            hideWindow()
+            requestHideSelf(0)
             return true
         }
 
